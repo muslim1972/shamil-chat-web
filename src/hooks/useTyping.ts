@@ -67,20 +67,26 @@ export function useTyping(conversationId: string | undefined, currentUserId: str
     const now = Date.now();
     if (now - lastTypingEmitRef.current < 400) return;
     lastTypingEmitRef.current = now;
-    typingChannelRef.current?.send({
-      type: 'broadcast',
-      event: 'typing',
-      payload: { userId: currentUserId, at: now, typing: true }
-    });
+    const channel = typingChannelRef.current;
+    if (channel && channel.state === 'joined') {
+      channel.send({
+        type: 'broadcast',
+        event: 'typing',
+        payload: { userId: currentUserId, at: now, typing: true }
+      });
+    }
   }, [currentUserId]);
 
   const emitTypingStop = useCallback(() => {
     const now = Date.now();
-    typingChannelRef.current?.send({
-      type: 'broadcast',
-      event: 'typing',
-      payload: { userId: currentUserId, at: now, typing: false }
-    });
+    const channel = typingChannelRef.current;
+    if (channel && channel.state === 'joined') {
+      channel.send({
+        type: 'broadcast',
+        event: 'typing',
+        payload: { userId: currentUserId, at: now, typing: false }
+      });
+    }
   }, [currentUserId]);
 
   const isTyping = Object.keys(typingUsers).length > 0;
