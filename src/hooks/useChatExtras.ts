@@ -11,20 +11,23 @@ export function useChatExtras(messageIds: string[]) {
 
     // 1. جلب البيانات الأولية (Fetch)
     const fetchExtras = useCallback(async () => {
-        if (messageIds.length === 0) return;
+        // تصفية المعرفات المؤقتة لأن الجدار الناري/قاعدة البيانات تتوقع UUIDs صالحة فقط
+        const validIds = messageIds.filter(id => id && !id.startsWith('temp_'));
+        
+        if (validIds.length === 0) return;
 
         try {
             // جلب التفاعلات من الجدول الجديد
             const { data: reactionsData } = await supabase
                 .from('message_reactions_extra')
                 .select('message_id, user_id, emoji')
-                .in('message_id', messageIds);
+                .in('message_id', validIds);
 
             // جلب العدادات من الجدول الجديد
             const { data: buzzData } = await supabase
                 .from('urgent_alert_counters')
                 .select('message_id, count')
-                .in('message_id', messageIds);
+                .in('message_id', validIds);
 
             const newExtras: Record<string, MessageExtras> = {};
 

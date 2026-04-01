@@ -85,6 +85,7 @@ const MessageListComponent: React.FC<MessageListProps> = ({
             isOwnMessage={isOwnMessage}
             onLongPress={onMessageLongPress}
             isSelected={selectedMessages.some((m) => m.id === message.id)}
+            selectedMessagesCount={selectedMessages.length}
             onClick={(
               message: Message,
               e?: React.MouseEvent | React.TouchEvent
@@ -168,7 +169,7 @@ const areEqual = (
     return false;
   }
   // If the number of selected messages is different, re-render
-  if (prevProps.selectedMessages !== nextProps.selectedMessages) {
+  if (prevProps.selectedMessages?.length !== nextProps.selectedMessages?.length) {
     return false;
   }
   // If the long press handler changed (e.g. due to closure updates), re-render

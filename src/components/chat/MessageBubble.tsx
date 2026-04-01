@@ -75,6 +75,13 @@ const MessageBubbleComponent: React.FC<MessageBubbleProps> = memo(({
   const { openMedia } = useMediaViewer();
   const { user } = useAuth();
   const { toggleReaction, removeReaction } = useChatReactions();
+  
+  // ✅ إخفاء شريط التفاعلات عند تأشير رسالة ثانية أو إلغاء تأشير هذه الرسالة
+  useEffect(() => {
+    if (!isSelected || selectedMessagesCount > 1) {
+      setToolbarVisible(false);
+    }
+  }, [isSelected, selectedMessagesCount]);
 
   // ✅ البيانات المحسوبة
   const computedData = useMemo(() => {
@@ -117,24 +124,30 @@ const MessageBubbleComponent: React.FC<MessageBubbleProps> = memo(({
   }, [senderUsername, message, isAIBot]);
 
   // ✅ معالجات Long Press
-  const handleClickWrapper = useCallback((e: React.MouseEvent<HTMLElement> | React.TouchEvent<HTMLElement>) => {
-    if (onClick) {
-      onClick(message, e);
+  // ✅ Handlers matching InfTeleKarbala behavior
+  const handleLongPressWrapper = useCallback(() => {
+    // 1. تفعيل التأشير دائماً عند الضغط المطول
+    onLongPress(null, message);
+
+    // 2. إذا لم يكن هناك تأشير مسبق، أظهر شريط المشاعر
+    if (selectedMessagesCount === 0) {
+      setToolbarVisible(true);
     }
-  }, [onClick, message]);
+  }, [onLongPress, message, selectedMessagesCount]);
 
-  const handleLongPressWrapper = useCallback((target: EventTarget | null) => {
-    onLongPress(target, message);
-  }, [onLongPress, message]);
-
-  // ✅ جديد: wrapper للنقر المزدوج
-  const handleDoubleClickWrapper = useCallback((e: React.MouseEvent<HTMLElement> | React.TouchEvent<HTMLElement>) => {
-    if (onDoubleClick) {
-      onDoubleClick(message, e);
+  const handleMessageClick = useCallback((e: React.MouseEvent<HTMLElement> | React.TouchEvent<HTMLElement>) => {
+    // النقر العادي يعمل فقط إذا كان هناك تأشير مفعل
+    if (isSelected || selectedMessagesCount > 0) {
+      onClick?.(message, e);
     }
-  }, [onDoubleClick, message]);
+  }, [isSelected, selectedMessagesCount, onClick, message]);
 
-  const longPressEvents = useLongPress(handleLongPressWrapper, handleClickWrapper, handleDoubleClickWrapper, { delay: 500 }); // ✅ جديد
+  const longPressEvents = useLongPress(
+    handleLongPressWrapper,
+    handleMessageClick,
+    undefined,
+    { delay: 800 }
+  );
 
   // ✅ تحميل روابط الوسائط
   useEffect(() => {
@@ -381,7 +394,10 @@ const MessageBubbleComponent: React.FC<MessageBubbleProps> = memo(({
       )}
 
       {/* حاوية الفقاعة والنقطة */}
-      <div className="relative flex items-end">
+      <div 
+        className="relative flex items-end"
+        style={{ zIndex: isSelected || toolbarVisible ? 50 : 1 }}
+      >
         {/* النقطة - تم عكس المواقع بناءً على طلب المستخدم */}
         {/* المرسل (يمين): النقطة يمين | المستلم (يسار): النقطة يسار */}
         <MessageStatusDot
@@ -397,13 +413,6 @@ const MessageBubbleComponent: React.FC<MessageBubbleProps> = memo(({
           {...longPressEvents}
           id={`message-${message.id}`}
           data-id={message.id}
-          onClick={(e) => {
-            if (isSelected || selectedMessagesCount > 0) {
-              onClick?.(message, e);
-            } else {
-              setToolbarVisible(!toolbarVisible);
-            }
-          }}
           className={`${message.message_type === 'forwarded_block'
             ? 'w-full min-w-[85vw] max-w-[95vw]'
             : (computedData.isMedia ? 'w-full max-w-[95vw] md:max-w-[60vw]' : 'max-w-xs md:max-w-md lg:max-w-lg')}
@@ -425,7 +434,8 @@ const MessageBubbleComponent: React.FC<MessageBubbleProps> = memo(({
                       color: 'var(--shagram-text)'
                     }
                   )
-            )
+            ),
+            zIndex: isSelected || toolbarVisible ? 50 : 1
           }}
         >
           {!(message.isDeleted && !isOwnMessage) && (
