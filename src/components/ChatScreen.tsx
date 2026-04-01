@@ -198,7 +198,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ conversationId, onSendAle
     scheduleMessage,
     deleteScheduledMessage,
     loading: isScheduledLoading,
-    refresh: refreshScheduledMessages
+    refresh: refreshScheduledMessages,
+    updateScheduledMessage
   } = useScheduledMessages(conversationId, user?.id || null);
 
   // عدد الرسائل المعلقة فقط
@@ -243,7 +244,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ conversationId, onSendAle
   }, []);
 
   // دالة تحديث الرسالة المجدولة
-  const { updateScheduledMessage } = useScheduledMessages(conversationId, user?.id || null);
+
 
   const handleUpdateScheduledMessage = useCallback(async (messageId: string, updates: any) => {
     await updateScheduledMessage(messageId, updates);

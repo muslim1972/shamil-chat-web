@@ -167,8 +167,8 @@ export const useScheduledMessages = (
             .subscribe();
 
         return () => {
-            scheduledChannel.unsubscribe();
-            conversationChannel.unsubscribe();
+            if (scheduledChannel) supabase.removeChannel(scheduledChannel);
+            if (conversationChannel) supabase.removeChannel(conversationChannel);
         };
     }, [conversationId, fetchScheduledMessages]);
 
