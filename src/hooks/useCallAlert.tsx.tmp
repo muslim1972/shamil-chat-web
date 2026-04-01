@@ -1,0 +1,130 @@
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { CallAlertData, callAlertService } from '../services/call-alert.service';
+import { Audio } from 'expo-av';
+
+export function useCallAlert() {
+  const [alertData, setAlertData] = useState<CallAlertData | null>(null);
+  const [isRinging, setIsRinging] = useState(false);
+  const audioRef = useRef<Audio.Sound | null>(null);
+
+  // تحميل الصوت
+  useEffect(() => {
+    const loadSound = async () => {
+      try {
+        const { sound } = await Audio.Sound.createAsync(
+          require('../../assets/sounds/chat-invite.mp3')
+        );
+        audioRef.current = sound;
+      } catch (error) {
+        console.error('Error loading sound:', error);
+      }
+    };
+
+    loadSound();
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.unloadAsync().catch(console.error);
+      }
+    };
+  }, []);
+
+  // بدء الرنين
+  const startRinging = useCallback(async () => {
+    try {
+      if (audioRef.current) {
+        await audioRef.current.setIsLoopingAsync(true);
+        await audioRef.current.playAsync();
+        setIsRinging(true);
+      }
+    } catch (error) {
+      console.error('Error starting ringtone:', error);
+    }
+  }, []);
+
+  // إيقاف الرنين
+  const stopRinging = useCallback(async () => {
+    try {
+      if (audioRef.current) {
+        await audioRef.current.stopAsync();
+        setIsRinging(false);
+      }
+    } catch (error) {
+      console.error('Error stopping ringtone:', error);
+    }
+  }, []);
+
+  // إغلاق التنبيه
+  const closeAlert = useCallback(() => {
+    setAlertData(null);
+    stopRinging();
+  }, [stopRinging]);
+
+  // قبول الدعوة
+  const acceptInvite = useCallback(async () => {
+    if (!alertData) return;
+    
+    try {
+      await callAlertService.acceptInvite(alertData.alertId);
+      closeAlert();
+    } catch (error) {
+      console.error('Error accepting invite:', error);
+    }
+  }, [alertData, closeAlert]);
+
+  // رفض الدعوة
+  const declineInvite = useCallback(async () => {
+    if (!alertData) return;
+    
+    try {
+      await callAlertService.declineInvite(alertData.alertId);
+      closeAlert();
+    } catch (error) {
+      console.error('Error declining invite:', error);
+    }
+  }, [alertData, closeAlert]);
+
+  // إرسال دعوة
+  const sendInvite = useCallback(async (conversationId: string, recipientId: string, message?: string) => {
+    try {
+      const alertId = await callAlertService.sendChatInvite(conversationId, recipientId, message);
+      return alertId;
+    } catch (error) {
+      console.error('Error sending invite:', error);
+      return null;
+    }
+  }, []);
+
+  // إلغاء الدعوة
+  const cancelInvite = useCallback(async (alertId: string) => {
+    try {
+      await callAlertService.cancelInvite(alertId);
+    } catch (error) {
+      console.error('Error cancelling invite:', error);
+    }
+  }, []);
+
+  // الاشتراك في تحديثات التنبيهات
+  useEffect(() => {
+    const subscription = callAlertService.onCallAlert((data) => {
+      setAlertData(data);
+      startRinging();
+    });
+
+    return () => {
+      subscription();
+    };
+  }, [startRinging]);
+
+  return {
+    alertData,
+    isRinging,
+    startRinging,
+    stopRinging,
+    closeAlert,
+    acceptInvite,
+    declineInvite,
+    sendInvite,
+    cancelInvite
+  };
+}

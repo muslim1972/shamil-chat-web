@@ -1,0 +1,145 @@
+/* ====================================
+   خلفيات الدردشة - Backgrounds
+   ==================================== */
+
+/* الخلفية الافتراضية */
+.chat-bg-default {
+    background-color: #f0f2f5;
+    background-image: none;
+}
+
+.dark .chat-bg-default {
+    background-color: #0b141a;
+}
+
+/* ====================================
+   ألوان هادئة - Solid Colors
+   ==================================== */
+
+.chat-bg-light-blue {
+    background: linear-gradient(to bottom, #e3f2fd 0%, #bbdefb 100%);
+}
+
+.dark .chat-bg-light-blue {
+    background: linear-gradient(to bottom, #1a237e 0%, #283593 100%);
+}
+
+.chat-bg-warm-cream {
+    background: linear-gradient(to bottom, #fff8e1 0%, #ffecb3 100%);
+}
+
+.dark .chat-bg-warm-cream {
+    background: linear-gradient(to bottom, #3e2723 0%, #4e342e 100%);
+}
+
+.chat-bg-soft-green {
+    background: linear-gradient(to bottom, #e8f5e9 0%, #c8e6c9 100%);
+}
+
+.dark .chat-bg-soft-green {
+    background: linear-gradient(to bottom, #1b5e20 0%, #2e7d32 100%);
+}
+
+.chat-bg-lavender {
+    background: linear-gradient(to bottom, #f3e5f5 0%, #e1bee7 100%);
+}
+
+.dark .chat-bg-lavender {
+    background: linear-gradient(to bottom, #4a148c 0%, #6a1b9a 100%);
+}
+
+/* ====================================
+   Gradients ناعمة - Smooth Gradients
+   ==================================== */
+
+.chat-bg-gradient-sunset {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%, #ff9a9e 100%);
+}
+
+.dark .chat-bg-gradient-sunset {
+    background: linear-gradient(135deg, #5c3a21 0%, #8b4513 50%, #a0522d 100%);
+}
+
+.chat-bg-gradient-ocean {
+    background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 50%, #d4fc79 100%);
+}
+
+.dark .chat-bg-gradient-ocean {
+    background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+}
+
+.chat-bg-gradient-forest {
+    background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 50%, #74ebd5 100%);
+}
+
+.dark .chat-bg-gradient-forest {
+    background: linear-gradient(135deg, #1a2a1a 0%, #2d4a2d 50%, #3d5a3d 100%);
+}
+
+/* ====================================
+   Patterns - نقوش جميلة
+   ==================================== */
+
+.chat-bg-pattern-dots {
+    background-color: #f5f5f5;
+    background-image: radial-gradient(circle, #ddd 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+.dark .chat-bg-pattern-dots {
+    background-color: #1a1a1a;
+    background-image: radial-gradient(circle, #333 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+.chat-bg-pattern-waves {
+    background-color: #e8f4f8;
+    background-image:
+        repeating-linear-gradient(45deg,
+            transparent,
+            transparent 10px,
+            rgba(255, 255, 255, 0.5) 10px,
+            rgba(255, 255, 255, 0.5) 20px);
+}
+
+.dark .chat-bg-pattern-waves {
+    background-color: #1a2530;
+    background-image:
+        repeating-linear-gradient(45deg,
+            transparent,
+            transparent 10px,
+            rgba(0, 0, 0, 0.3) 10px,
+            rgba(0, 0, 0, 0.3) 20px);
+}
+
+.chat-bg-pattern-geometric {
+    background-color: #fafafa;
+    background-image:
+        linear-gradient(30deg, #f0f0f0 12%, transparent 12.5%, transparent 87%, #f0f0f0 87.5%, #f0f0f0),
+        linear-gradient(150deg, #f0f0f0 12%, transparent 12.5%, transparent 87%, #f0f0f0 87.5%, #f0f0f0),
+        linear-gradient(30deg, #f0f0f0 12%, transparent 12.5%, transparent 87%, #f0f0f0 87.5%, #f0f0f0),
+        linear-gradient(150deg, #f0f0f0 12%, transparent 12.5%, transparent 87%, #f0f0f0 87.5%, #f0f0f0);
+    background-size: 80px 140px;
+    background-position: 0 0, 0 0, 40px 70px, 40px 70px;
+}
+
+.dark .chat-bg-pattern-geometric {
+    background-color: #1a1a1a;
+    background-image:
+        linear-gradient(30deg, #2a2a2a 12%, transparent 12.5%, transparent 87%, #2a2a2a 87.5%, #2a2a2a),
+        linear-gradient(150deg, #2a2a2a 12%, transparent 12.5%, transparent 87%, #2a2a2a 87.5%, #2a2a2a),
+        linear-gradient(30deg, #2a2a2a 12%, transparent 12.5%, transparent 87%, #2a2a2a 87.5%, #2a2a2a),
+        linear-gradient(150deg, #2a2a2a 12%, transparent 12.5%, transparent 87%, #2a2a2a 87.5%, #2a2a2a);
+    background-size: 80px 140px;
+    background-position: 0 0, 0 0, 40px 70px, 40px 70px;
+}
+
+.chat-bg-pattern-subtle {
+    background-color: #ffffff;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e0e0e0' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+.dark .chat-bg-pattern-subtle {
+    background-color: #1a1a1a;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23333333' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}

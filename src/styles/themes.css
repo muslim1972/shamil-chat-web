@@ -1,0 +1,457 @@
+/* ====================================
+   نظام الثيمات المتقدم - إصدار محسّن
+   ==================================== */
+
+/* ====================================
+   الثيم الجديد - Shamil Theme 🌟
+   ==================================== */
+:root.theme-shamil {
+    /* الألوان الأساسية - Light Mode (الافتراضي) */
+    --primary: #8B5CF6;
+    --primary-hover: #7c3aed;
+    --primary-light: #ede9fe;
+    --primary-lighter: #f5f3ff;
+    --primary-dark: #6d28d9;
+
+    --secondary: #3B82F6;
+    --secondary-hover: #2563eb;
+    --secondary-light: #dbeafe;
+    --secondary-lighter: #eff6ff;
+
+    --accent: #9333EA;
+    --accent-hover: #7e22ce;
+    --accent-light: #f3e8ff;
+
+    /* Gradients الجديدة */
+    --gradient-primary: linear-gradient(135deg, rgba(139, 92, 246, 0.95) 0%, rgba(59, 130, 246, 0.95) 100%);
+    --gradient-accent: linear-gradient(135deg, rgba(147, 51, 234, 0.95) 0%, rgba(139, 92, 246, 0.95) 100%);
+    --gradient-soft: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+    --gradient-background: linear-gradient(135deg, #2d1b4e 0%, #1a2332 50%, #0f1f3d 100%);
+
+    /* للرسائل المستلمة */
+    --message-received-bg: #f5f3ff;
+    --message-received-border: #ede9fe;
+
+    /* متغيرات الواجهات - تطبيق الثيم على التطبيق بالكامل */
+    --app-background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+    --header-bg: rgba(139, 92, 246, 0.05);
+    --message-form-bg: #ffffff;
+    --conversation-card-bg: #ffffff;
+    --conversation-card-hover: #f5f3ff;
+
+    /* متغيرات شاغرام - Light Mode */
+    --shagram-bg: #faf5ff;
+    --shagram-card-bg: #ffffff;
+    --shagram-navbar-bg: #ffffff;
+    --shagram-text: #1f2937;
+    --shagram-text-muted: #6b7280;
+    --shagram-border: #e9d5ff;
+    --shagram-input-bg: #f5f3ff;
+    --shagram-hover: rgba(139, 92, 246, 0.05);
+}
+
+/* Dark mode لـ Shamil Theme */
+:root.theme-shamil.dark {
+    --primary-light: #4c1d95;
+    --primary-lighter: #2e1065;
+    --secondary-light: #1e3a8a;
+    --secondary-lighter: #1e40af;
+    --accent-light: #581c87;
+    --message-received-bg: #2e1065;
+    --message-received-border: #4c1d95;
+
+    /* متغيرات الواجهات - Dark Mode */
+    --app-background: linear-gradient(135deg, #1a0b2e 0%, #0f0620 100%);
+    --header-bg: rgba(139, 92, 246, 0.1);
+    --message-form-bg: #1a0b2e;
+    --conversation-card-bg: rgba(139, 92, 246, 0.05);
+    --conversation-card-hover: rgba(139, 92, 246, 0.15);
+
+    /* متغيرات شاغرام - Dark Mode */
+    --shagram-bg: #0f0620;
+    --shagram-card-bg: #1a0b2e;
+    --shagram-navbar-bg: #1a0b2e;
+    --shagram-text: #ffffff;
+    --shagram-text-muted: #a78bfa;
+    --shagram-border: #4c1d95;
+    --shagram-input-bg: #2e1065;
+    --shagram-hover: rgba(139, 92, 246, 0.1);
+}
+
+:root {
+    /* الثيم الافتراضي القديم - Indigo/Purple (ناعم) */
+    --primary: #6366f1;
+    --primary-hover: #4f46e5;
+    --primary-light: #e0e7ff;
+    --primary-lighter: #f5f7ff;
+    --primary-dark: #3730a3;
+
+    --secondary: #8b5cf6;
+    --secondary-hover: #7c3aed;
+    --secondary-light: #ede9fe;
+    --secondary-lighter: #f7f5ff;
+
+    --accent: #3b82f6;
+    --accent-hover: #2563eb;
+    --accent-light: #dbeafe;
+
+    /* Gradients ناعمة */
+    --gradient-primary: linear-gradient(135deg, rgba(99, 102, 241, 0.95) 0%, rgba(139, 92, 246, 0.95) 100%);
+    --gradient-accent: linear-gradient(135deg, rgba(59, 130, 246, 0.95) 0%, rgba(99, 102, 241, 0.95) 100%);
+    --gradient-soft: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+
+    /* للرسائل المستلمة */
+    --message-received-bg: #f3f4f6;
+    --message-received-border: #e5e7eb;
+
+    /* متغيرات الواجهات - تطبيق الثيم على التطبيق بالكامل */
+    --app-background: linear-gradient(135deg, #f5f7ff 0%, #e0e7ff 100%);
+    --header-bg: rgba(99, 102, 241, 0.05);
+    --message-form-bg: #ffffff;
+    --conversation-card-bg: #ffffff;
+    --conversation-card-hover: #f5f7ff;
+
+    /* متغيرات شاغرام - Light Mode */
+    --shagram-bg: #f8fafc;
+    --shagram-card-bg: #ffffff;
+    --shagram-navbar-bg: #ffffff;
+    --shagram-text: #1f2937;
+    --shagram-text-muted: #6b7280;
+    --shagram-border: #e5e7eb;
+    --shagram-input-bg: #f3f4f6;
+    --shagram-hover: rgba(0, 0, 0, 0.03);
+}
+
+/* Dark mode للثيم الافتراضي القديم */
+:root.dark {
+    --primary-light: #312e81;
+    --primary-lighter: #1e1b4b;
+    --secondary-light: #4c1d95;
+    --secondary-lighter: #2e1065;
+    --accent-light: #1e3a8a;
+    --message-received-bg: #374151;
+    --message-received-border: #4b5563;
+
+    /* متغيرات الواجهات - Dark Mode */
+    --app-background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
+    --header-bg: rgba(99, 102, 241, 0.1);
+    --message-form-bg: #1e1b4b;
+    --conversation-card-bg: rgba(99, 102, 241, 0.05);
+    --conversation-card-hover: rgba(99, 102, 241, 0.15);
+
+    /* متغيرات شاغرام - Dark Mode */
+    --shagram-bg: #0a0a0a;
+    --shagram-card-bg: #171717;
+    --shagram-navbar-bg: #171717;
+    --shagram-text: #ffffff;
+    --shagram-text-muted: #9ca3af;
+    --shagram-border: #374151;
+    --shagram-input-bg: #1f2937;
+    --shagram-hover: rgba(255, 255, 255, 0.05);
+}
+
+/* ====================================
+   الثيم البارد - Cold (أزرق/سماوي ناعم)
+   ==================================== */
+:root.theme-cold {
+    --primary: #0ea5e9;
+    --primary-hover: #0284c7;
+    --primary-light: #e0f2fe;
+    --primary-lighter: #f0f9ff;
+    --primary-dark: #075985;
+
+    --secondary: #06b6d4;
+    --secondary-hover: #0891b2;
+    --secondary-light: #cffafe;
+    --secondary-lighter: #ecfeff;
+
+    --accent: #14b8a6;
+    --accent-hover: #0d9488;
+    --accent-light: #ccfbf1;
+
+    --gradient-primary: linear-gradient(135deg, rgba(14, 165, 233, 0.95) 0%, rgba(6, 182, 212, 0.95) 100%);
+    --gradient-accent: linear-gradient(135deg, rgba(20, 184, 166, 0.95) 0%, rgba(14, 165, 233, 0.95) 100%);
+    --gradient-soft: linear-gradient(135deg, rgba(14, 165, 233, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
+
+    --message-received-bg: #f0f9ff;
+    --message-received-border: #e0f2fe;
+
+    /* متغيرات الواجهات */
+    --app-background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    --header-bg: rgba(14, 165, 233, 0.05);
+    --message-form-bg: #ffffff;
+    --conversation-card-bg: #ffffff;
+    --conversation-card-hover: #f0f9ff;
+
+    /* متغيرات شاغرام - Light Mode */
+    --shagram-bg: #f0f9ff;
+    --shagram-card-bg: #ffffff;
+    --shagram-navbar-bg: #ffffff;
+    --shagram-text: #0c4a6e;
+    --shagram-text-muted: #0284c7;
+    --shagram-border: #bae6fd;
+    --shagram-input-bg: #e0f2fe;
+    --shagram-hover: rgba(14, 165, 233, 0.05);
+}
+
+:root.theme-cold.dark {
+    --primary-light: #0c4a6e;
+    --primary-lighter: #082f49;
+    --secondary-light: #164e63;
+    --secondary-lighter: #083344;
+    --accent-light: #134e4a;
+    --message-received-bg: #1e3a52;
+    --message-received-border: #2d5570;
+
+    /* متغيرات الواجهات - Dark Mode */
+    --app-background: linear-gradient(135deg, #0c4a6e 0%, #082f49 100%);
+    --header-bg: rgba(14, 165, 233, 0.1);
+    --message-form-bg: #0c4a6e;
+    --conversation-card-bg: rgba(14, 165, 233, 0.05);
+    --conversation-card-hover: rgba(14, 165, 233, 0.15);
+
+    /* متغيرات شاغرام - Dark Mode */
+    --shagram-bg: #082f49;
+    --shagram-card-bg: #0c4a6e;
+    --shagram-navbar-bg: #0c4a6e;
+    --shagram-text: #ffffff;
+    --shagram-text-muted: #7dd3fc;
+    --shagram-border: #0369a1;
+    --shagram-input-bg: #075985;
+    --shagram-hover: rgba(14, 165, 233, 0.1);
+}
+
+/* ====================================
+   الثيم الدافئ - Warm (برتقالي/أحمر ناعم)
+   ==================================== */
+:root.theme-warm {
+    --primary: #f97316;
+    --primary-hover: #ea580c;
+    --primary-light: #fed7aa;
+    --primary-lighter: #fff7ed;
+    --primary-dark: #c2410c;
+
+    --secondary: #ef4444;
+    --secondary-hover: #dc2626;
+    --secondary-light: #fecaca;
+    --secondary-lighter: #fef2f2;
+
+    --accent: #f59e0b;
+    --accent-hover: #d97706;
+    --accent-light: #fde68a;
+
+    --gradient-primary: linear-gradient(135deg, rgba(249, 115, 22, 0.95) 0%, rgba(239, 68, 68, 0.95) 100%);
+    --gradient-accent: linear-gradient(135deg, rgba(245, 158, 11, 0.95) 0%, rgba(249, 115, 22, 0.95) 100%);
+    --gradient-soft: linear-gradient(135deg, rgba(249, 115, 22, 0.1) 0%, rgba(239, 68, 68, 0.1) 100%);
+
+    --message-received-bg: #fff7ed;
+    --message-received-border: #fed7aa;
+
+    /* متغيرات الواجهات */
+    --app-background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
+    --header-bg: rgba(249, 115, 22, 0.05);
+    --message-form-bg: #ffffff;
+    --conversation-card-bg: #ffffff;
+    --conversation-card-hover: #fff7ed;
+
+    /* متغيرات شاغرام - Light Mode */
+    --shagram-bg: #fff7ed;
+    --shagram-card-bg: #ffffff;
+    --shagram-navbar-bg: #ffffff;
+    --shagram-text: #7c2d12;
+    --shagram-text-muted: #ea580c;
+    --shagram-border: #fed7aa;
+    --shagram-input-bg: #ffedd5;
+    --shagram-hover: rgba(249, 115, 22, 0.05);
+}
+
+:root.theme-warm.dark {
+    --primary-light: #7c2d12;
+    --primary-lighter: #431407;
+    --secondary-light: #7f1d1d;
+    --secondary-lighter: #450a0a;
+    --accent-light: #78350f;
+    --message-received-bg: #44291a;
+    --message-received-border: #6b3d28;
+
+    /* متغيرات الواجهات - Dark Mode */
+    --app-background: linear-gradient(135deg, #7c2d12 0%, #431407 100%);
+    --header-bg: rgba(249, 115, 22, 0.1);
+    --message-form-bg: #7c2d12;
+    --conversation-card-bg: rgba(249, 115, 22, 0.05);
+    --conversation-card-hover: rgba(249, 115, 22, 0.15);
+
+    /* متغيرات شاغرام - Dark Mode */
+    --shagram-bg: #431407;
+    --shagram-card-bg: #7c2d12;
+    --shagram-navbar-bg: #7c2d12;
+    --shagram-text: #ffffff;
+    --shagram-text-muted: #fdba74;
+    --shagram-border: #c2410c;
+    --shagram-input-bg: #9a3412;
+    --shagram-hover: rgba(249, 115, 22, 0.1);
+}
+
+/* ====================================
+   الثيم الحيوي - Youthful (وردي/أخضر ناعم)
+   ==================================== */
+:root.theme-youthful {
+    --primary: #ec4899;
+    --primary-hover: #db2777;
+    --primary-light: #fce7f3;
+    --primary-lighter: #fdf2f8;
+    --primary-dark: #be185d;
+
+    --secondary: #10b981;
+    --secondary-hover: #059669;
+    --secondary-light: #d1fae5;
+    --secondary-lighter: #ecfdf5;
+
+    --accent: #a855f7;
+    --accent-hover: #9333ea;
+    --accent-light: #ede9fe;
+
+    --gradient-primary: linear-gradient(135deg, rgba(236, 72, 153, 0.95) 0%, rgba(16, 185, 129, 0.95) 100%);
+    --gradient-accent: linear-gradient(135deg, rgba(168, 85, 247, 0.95) 0%, rgba(236, 72, 153, 0.95) 100%);
+    --gradient-soft: linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
+
+    --message-received-bg: #fdf2f8;
+    --message-received-border: #fce7f3;
+
+    /* متغيرات الواجهات */
+    --app-background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+    --header-bg: rgba(236, 72, 153, 0.05);
+    --message-form-bg: #ffffff;
+    --conversation-card-bg: #ffffff;
+    --conversation-card-hover: #fdf2f8;
+
+    /* متغيرات شاغرام - Light Mode */
+    --shagram-bg: #fdf2f8;
+    --shagram-card-bg: #ffffff;
+    --shagram-navbar-bg: #ffffff;
+    --shagram-text: #831843;
+    --shagram-text-muted: #db2777;
+    --shagram-border: #fbcfe8;
+    --shagram-input-bg: #fce7f3;
+    --shagram-hover: rgba(236, 72, 153, 0.05);
+}
+
+:root.theme-youthful.dark {
+    --primary-light: #831843;
+    --primary-lighter: #500724;
+    --secondary-light: #065f46;
+    --secondary-lighter: #064e3b;
+    --accent-light: #581c87;
+    --message-received-bg: #4a1942;
+    --message-received-border: #6b2d5f;
+
+    /* متغيرات الواجهات - Dark Mode */
+    --app-background: linear-gradient(135deg, #831843 0%, #500724 100%);
+    --header-bg: rgba(236, 72, 153, 0.1);
+    --message-form-bg: #831843;
+    --conversation-card-bg: rgba(236, 72, 153, 0.05);
+    --conversation-card-hover: rgba(236, 72, 153, 0.15);
+
+    /* متغيرات شاغرام - Dark Mode */
+    --shagram-bg: #500724;
+    --shagram-card-bg: #831843;
+    --shagram-navbar-bg: #831843;
+    --shagram-text: #ffffff;
+    --shagram-text-muted: #f9a8d4;
+    --shagram-border: #be185d;
+    --shagram-input-bg: #9d174d;
+    --shagram-hover: rgba(236, 72, 153, 0.1);
+}
+
+/* ====================================
+   تطبيق الألوان على العناصر
+   ==================================== */
+
+/* الأزرار الأساسية */
+.btn-primary {
+    background: var(--primary);
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* الأزرار بـ Gradient */
+.btn-gradient {
+    background: var(--gradient-primary);
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.btn-gradient:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* الروابط */
+.link-primary {
+    color: var(--primary);
+    transition: color 0.2s ease;
+}
+
+.link-primary:hover {
+    color: var(--primary-hover);
+}
+
+/* Backgrounds */
+.bg-primary {
+    background-color: var(--primary);
+}
+
+.bg-primary-light {
+    background-color: var(--primary-light);
+}
+
+.bg-gradient {
+    background: var(--gradient-primary);
+}
+
+.bg-gradient-soft {
+    background: var(--gradient-soft);
+}
+
+/* النصوص */
+.text-primary {
+    color: var(--primary);
+}
+
+.text-secondary {
+    color: var(--secondary);
+}
+
+.text-accent {
+    color: var(--accent);
+}
+
+/* Borders */
+.border-primary {
+    border-color: var(--primary);
+}
+
+.border-primary-light {
+    border-color: var(--primary-light);
+}
+
+/* Shadows بألوان الثيم */
+.shadow-primary {
+    box-shadow: 0 4px 14px 0 rgba(var(--primary), 0.3);
+}
+
+/* ====================================
+   Transitions سلسة لكل شيء
+   ==================================== */
+* {
+    transition-property: background-color, color, border-color, box-shadow, transform;
+    transition-duration: 0.3s;
+    transition-timing-function: ease-in-out;
+}
