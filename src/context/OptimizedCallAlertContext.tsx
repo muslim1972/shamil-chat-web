@@ -193,21 +193,56 @@ export function OptimizedCallAlertProvider({ children }: { children: React.React
       setAudio(dummyAudio);
       activeAudiosRef.current.add(dummyAudio);
 
-      // إرسال التنبيه العاجل
-      const { error } = await supabase
+      // ✅ محاولة تجميع التنبيهات باستخدام جدول منفصل (Isolated Counter)
+      const { data: lastMessages } = await supabase
         .from('messages')
-        .insert({
-          conversation_id: conversationId,
-          sender_id: user.id,
-          content: 'دعوة لمحادثة مستعجلة !!',
-          message_type: 'alert',
-          media_metadata: {
-            is_urgent_alert: true,
-            call_id: callId,
-            priority: 'high',
-            sound_type: 'phone_ring'
-          },
-        });
+        .select('id, sender_id', { count: 'exact' })
+        .eq('conversation_id', conversationId)
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      const lastMsg = lastMessages?.[0];
+      const isConsecutiveAlert = lastMsg && lastMsg.sender_id === user.id;
+
+      let error;
+      if (isConsecutiveAlert) {
+          // 1. تحديث العداد في الجدول المنفصل
+          const { data: counterData } = await supabase
+            .from('urgent_alert_counters')
+            .select('count')
+            .eq('message_id', lastMsg.id)
+            .single();
+          
+          const newCount = (counterData?.count || 1) + 1;
+
+          await supabase
+            .from('urgent_alert_counters')
+            .upsert({ 
+                message_id: lastMsg.id, 
+                count: newCount, 
+                last_updated_at: new Date().toISOString() 
+            });
+
+          console.log('🔔 Isolated alert - incrementing count to:', newCount);
+      } else {
+          // 2. إرسال رسالة جديدة (لا نلمس الجدول الأصلي، فقط إدراج)
+          const { data: newMsg, error: insertError } = await supabase
+            .from('messages')
+            .insert({
+                conversation_id: conversationId,
+                sender_id: user.id,
+                content: 'دعوة لمحادثة مستعجلة !!',
+                message_type: 'alert',
+                media_metadata: { is_urgent_alert: true, call_id: callId }
+            })
+            .select()
+            .single();
+          
+          if (newMsg) {
+              await supabase.from('urgent_alert_counters').insert({ message_id: newMsg.id, count: 1 });
+          }
+          error = insertError;
+      }
 
       // انتهاء العملية بعد 20 ثانية
       setTimeout(() => {

@@ -79,10 +79,11 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 shadow-sm p-4 flex items-center border-b border-gray-200 dark:border-gray-700 h-[72px] pt-[env(safe-area-inset-top)]">
+    <div className="shadow-sm p-4 flex items-center border-b h-[72px] pt-[env(safe-area-inset-top)]" style={{ background: 'var(--header-bg)', borderColor: 'var(--shagram-border)' }}>
       <button
         onClick={onBack}
-        className="p-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-full mr-2"
+        className="p-2 hover:opacity-80 focus:outline-none rounded-full mr-2"
+        style={{ color: 'var(--shagram-text)' }}
       >
         <ArrowLeft size={24} />
       </button>
@@ -93,9 +94,9 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
             <GroupAvatars participants={participants} size="medium" maxDisplay={3} />
             <div className="mr-3 flex-1 min-w-0 relative">
               <div className="flex items-center">
-                <h2 className="text-sm font-semibold text-gray-900 dark:text-white">محادثة جماعية</h2>
+                <h2 className="text-sm font-semibold" style={{ color: 'var(--shagram-text)' }}>محادثة جماعية</h2>
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">{participants.length} أعضاء</p>
+              <p className="text-xs" style={{ color: 'var(--shagram-text-muted)' }}>{participants.length} أعضاء</p>
               {isCurrentlyTyping && (
                 <div className="absolute right-0 top-0 z-10">
                   <SmartTypingIndicator
@@ -113,7 +114,8 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
           <>
             <button
               onClick={handleAvatarClick}
-              className="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-800 font-bold overflow-hidden ml-3 hover:opacity-80 transition-opacity"
+              className="flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center font-bold overflow-hidden ml-3 hover:opacity-80 transition-opacity"
+              style={{ background: 'var(--primary-light)', color: 'var(--primary)' }}
             >
               {avatar_url ? (
                 <img
@@ -130,7 +132,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                 onClick={handleProfileClick}
                 className="text-left block truncate"
               >
-                <h2 className="text-sm font-semibold text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors truncate">
+                <h2 className="text-sm font-semibold transition-colors truncate" style={{ color: 'var(--shagram-text)' }}>
                   {displayConversationName}
                 </h2>
               </button>
@@ -167,7 +169,8 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         )}
         <button
           onClick={() => navigate('/settings/typing')}
-          className="p-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-full"
+          className="p-2 hover:opacity-80 focus:outline-none rounded-full"
+          style={{ color: 'var(--shagram-text-muted)' }}
           title="تخصيص مؤشر الكتابة"
         >
           <PenTool size={20} />

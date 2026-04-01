@@ -260,10 +260,10 @@ const ArchivedConversationsScreen: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="flex items-center justify-center h-screen" style={{ background: 'var(--app-background)' }}>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-400">جاري تحميل المحادثات المؤرشفة...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto" style={{ borderBottomColor: 'var(--primary)' }}></div>
+          <p className="mt-4" style={{ color: 'var(--shagram-text-muted)' }}>جاري تحميل المحادثات المؤرشفة...</p>
         </div>
       </div>
     );
@@ -271,8 +271,8 @@ const ArchivedConversationsScreen: React.FC = () => {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+      <div className="flex items-center justify-center h-screen" style={{ background: 'var(--app-background)' }}>
+        <div className="text-center p-8 rounded-lg shadow-md" style={{ background: 'var(--conversation-card-bg)' }}>
           <h2 className="text-xl font-bold text-red-600 mb-4">حدث خطأ</h2>
           <p className="text-gray-700 dark:text-gray-300 mb-4">{error}</p>
           <button
@@ -287,8 +287,8 @@ const ArchivedConversationsScreen: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-white dark:bg-slate-800">
-      <div className="bg-indigo-600 dark:bg-slate-900/70 backdrop-blur-lg text-white p-4 shadow-md border-b border-indigo-700 dark:border-slate-700">
+    <div className="flex flex-col h-screen" style={{ background: 'var(--app-background)' }}>
+      <div className="text-white p-4 shadow-md border-b" style={{ background: 'var(--header-bg)', borderColor: 'var(--shagram-border)', color: 'var(--shagram-text)' }}>
         <div className="flex justify-between items-center">
           <div className="flex items-center">
             <button
@@ -303,9 +303,9 @@ const ArchivedConversationsScreen: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-slate-800">
+      <div className="flex-1 overflow-y-auto">
         {archivedConversations.length === 0 ? (
-          <div className="text-center p-8 text-gray-500 dark:text-gray-400">
+          <div className="text-center p-8" style={{ color: 'var(--shagram-text-muted)' }}>
             {'لا توجد محادثات مؤرشفة'}
           </div>
         ) : (

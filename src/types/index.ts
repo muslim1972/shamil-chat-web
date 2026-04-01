@@ -75,6 +75,9 @@ export interface Message {
     sender?: { username: string };
     media_metadata?: any;
   } | null;
+  // ✅ ميزات إضافية للمحادثة المتقدمة
+  reactions?: Record<string, string>; // { userId: emoji }
+  buzz_count?: number; // لعداد التنبيه العاجل
 }
 
 export interface AuthState {

@@ -8,6 +8,8 @@ interface MessageHandlersProps {
   clearSelection: () => void;
   setReplyingToMessage: (message: Message | null) => void; // ✅ جديد
   inputRef: React.RefObject<HTMLTextAreaElement | null>; // ✅ جديد
+  userId?: string; // ✅ جديد
+  toggleReaction?: (messageId: string, userId: string, emoji: string) => Promise<void>; // ✅ جديد
 }
 
 export function useMessageHandlers({
@@ -17,6 +19,8 @@ export function useMessageHandlers({
   clearSelection,
   setReplyingToMessage, // ✅ جديد
   inputRef, // ✅ جديد
+  userId, // ✅ جديد
+  toggleReaction, // ✅ جديد
 }: MessageHandlersProps) {
   const handleMessageClick = useCallback((message: Message, e?: React.MouseEvent | React.TouchEvent) => {
     if (e) e.stopPropagation();
@@ -34,21 +38,18 @@ export function useMessageHandlers({
     }
   }, [isSelectionMode, toggleSelectedItem, setSelectionMode]);
 
-  // ✅ جديد: معالج النقر المزدوج للرد السريع
-  const handleMessageDoubleClick = useCallback((message: Message, e?: React.MouseEvent | React.TouchEvent) => {
+  // ✅ جديد: معالج النقر المزدوج لإضافة تفاعل ❤️ بشكل سريع
+  const handleMessageDoubleClick = useCallback(async (message: Message, e?: React.MouseEvent | React.TouchEvent) => {
     if (e) e.stopPropagation();
 
     // إذا كان في وضع التأشير، نتجاهل النقر المزدوج
     if (isSelectionMode) return;
 
-    // تفعيل وضع الرد
-    setReplyingToMessage(message);
-
-    // تركيز على حقل الإدخال بعد delay صغير
-    setTimeout(() => {
-      inputRef.current?.focus();
-    }, 100);
-  }, [isSelectionMode, setReplyingToMessage, inputRef]);
+    // إضافة تفاعل ❤️ بشكل سريع
+    if (toggleReaction && userId) {
+      await toggleReaction(message.id, userId, '❤️');
+    }
+  }, [isSelectionMode, toggleReaction, userId]);
 
   const handleContainerClick = useCallback((e: React.MouseEvent | React.TouchEvent) => {
     // ✅ إصلاح المشكلة 3: إلغاء التأشير بالنقر في أي مكان فارغ

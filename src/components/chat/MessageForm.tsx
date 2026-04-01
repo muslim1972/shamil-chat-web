@@ -153,7 +153,8 @@ export const MessageForm: React.FC<MessageFormProps> = ({
 
   return (
     <form
-      className={`bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-2 relative ${disabled ? 'opacity-60' : ''}`}
+      className={`border-t p-2 relative ${disabled ? 'opacity-60' : ''}`}
+      style={{ background: 'var(--message-form-bg)', borderColor: 'var(--shagram-border)' }}
     >
       <AttachmentMenu
         isOpen={isAttachmentMenuOpen}
@@ -179,12 +180,15 @@ export const MessageForm: React.FC<MessageFormProps> = ({
 
       {/* ✅ زر إلغاء الرد (Reply Banner) */}
       {replyingToMessage && onCancelReply && (
-        <div className="flex justify-between items-center bg-gray-50 dark:bg-gray-700/50 px-3 py-2 mb-2 mx-1 rounded-lg border-l-4 border-indigo-500 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-200">
+        <div 
+          className="flex justify-between items-center px-3 py-2 mb-2 mx-1 rounded-lg border-l-4 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-200"
+          style={{ background: 'var(--conversation-card-hover)', borderColor: 'var(--primary)' }}
+        >
           <div className="flex flex-col flex-1 min-w-0 mr-2">
-            <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 truncate">
+            <span className="text-xs font-bold truncate" style={{ color: 'var(--primary)' }}>
               الرد على {replyingToMessage.sender_username || replyingToMessage.sender?.username || 'مستخدم'}
             </span>
-            <span className="text-xs text-gray-600 dark:text-gray-300 truncate opacity-80">
+            <span className="text-xs truncate opacity-80" style={{ color: 'var(--shagram-text-muted)' }}>
               {replyingToMessage.message_type === 'text'
                 ? replyingToMessage.text
                 : (replyingToMessage.message_type === 'image' ? '📷 صورة' :

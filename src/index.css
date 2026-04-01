@@ -21,6 +21,8 @@
   --animate-spin-slow: spin 8s linear infinite;
   --animate-float: float 6s ease-in-out infinite;
   --animate-fade-in: fade-in 0.3s ease-out;
+  --animate-writing-hand: writing 0.8s ease-in-out infinite;
+  --animate-plane-loading: plane-prep 1.2s ease-in-out infinite;
 }
 
 html,
@@ -31,8 +33,8 @@ body {
   height: 100%;
   height: 100dvh;
   overflow: hidden;
-  background-color: var(--bg-dark);
-  color: inherit; /* Allow components to define their own text color */
+  background: var(--app-background, #ffffff);
+  color: var(--shagram-text, inherit); /* استخدام لون النص من الثيم */
   font-family: system-ui, -apple-system, sans-serif;
   
   -webkit-touch-callout: none;
@@ -96,3 +98,17 @@ a,
 .reaction-popover-enter {
   animation: fade-in 0.2s ease-out;
 }
+
+@keyframes writing {
+  0%, 100% { transform: rotate(0deg) translateX(0); }
+  25% { transform: rotate(5deg) translateX(2px); }
+  75% { transform: rotate(-5deg) translateX(-2px); }
+}
+
+@keyframes plane-prep {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(-2px, 2px) rotate(-5deg); }
+  50% { transform: translate(0, 0) scale(1.05); }
+  75% { transform: translate(1px, -1px) rotate(5deg); }
+}
+

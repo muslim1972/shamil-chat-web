@@ -11,7 +11,7 @@ import useLongPress from '../hooks/useLongPress';
 import type { Conversation } from '../types';
 import { formatDistanceToNow } from 'date-fns';
 import { ar } from 'date-fns/locale';
-import { Archive, QrCode, X, LayoutGrid, PenTool, Bell, LogOut } from 'lucide-react';
+import { Archive, QrCode, X, LayoutGrid, PenTool, Bell, LogOut, Palette } from 'lucide-react';
 import SearchDialog from './SearchDialog';
 import { QRScannerDialog } from './QRScannerDialog';
 import { processQRImage } from '../utils/qrScannerUtils';
@@ -471,11 +471,11 @@ const ConversationListScreen: React.FC = () => {
 
 
   if (loading) {
-    return <div className="flex items-center justify-center h-screen bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-50">جاري التحميل...</div>;
+    return <div className="flex items-center justify-center h-screen" style={{ background: 'var(--app-background)', color: 'var(--shagram-text)' }}>جاري التحميل...</div>;
   }
 
   if (error) {
-    return <div className="flex items-center justify-center h-screen bg-white dark:bg-slate-900 text-red-500">خطأ: {error}</div>;
+    return <div className="flex items-center justify-center h-screen" style={{ background: 'var(--app-background)', color: '#ef4444' }}>خطأ: {error}</div>;
   }
 
   return (
@@ -498,7 +498,7 @@ const ConversationListScreen: React.FC = () => {
           <div className="flex justify-between items-center gap-2">
             {/* أفاتار واسم المستخدم */}
             <div className="flex items-center gap-2 min-w-0 flex-shrink">
-              <div className="relative inline-flex items-center justify-center w-8 h-8 overflow-hidden bg-slate-200 dark:bg-slate-600 rounded-full flex-shrink-0">
+              <div className="relative inline-flex items-center justify-center w-8 h-8 overflow-hidden rounded-full flex-shrink-0" style={{ background: 'var(--primary-light)' }}>
                 {userAvatar ? (
                   <img
                     src={userAvatar}
@@ -511,16 +511,17 @@ const ConversationListScreen: React.FC = () => {
                   </span>
                 )}
               </div>
-              <span className="text-sm sm:text-base font-semibold text-slate-800 dark:text-slate-50 truncate max-w-[100px] sm:max-w-[150px]">
+              <span className="text-sm sm:text-base font-semibold truncate max-w-[100px] sm:max-w-[150px]" style={{ color: 'var(--shagram-text)' }}>
                 {(user as any)?.user_metadata?.username || 'المستخدم'}
               </span>
             </div>
             {/* الأزرار */}
-            <div className="flex items-center space-x-2 rtl:space-x-reverse text-slate-600 dark:text-slate-300 flex-shrink-0">
-              <button onClick={() => navigate('/settings/typing')} aria-label="تخصيص مؤشر الكتابة" className="hover:text-slate-900 dark:hover:text-white"><PenTool size={20} /></button>
-              <button onClick={() => navigate('/archived')} aria-label="المحادثات المؤرشفة" className="hover:text-slate-900 dark:hover:text-white"><Archive size={20} /></button>
-              <button onClick={() => navigate('/notifications')} aria-label="التنبيهات" className="hover:text-slate-900 dark:hover:text-white"><Bell size={20} /></button>
-              <button onClick={() => navigate('/dashboard')} aria-label="الواجهة الرئيسية" className="hover:text-slate-900 dark:hover:text-white"><LayoutGrid size={20} /></button>
+            <div className="flex items-center space-x-2 rtl:space-x-reverse flex-shrink-0" style={{ color: 'var(--shagram-text-muted)' }}>
+              <button onClick={() => navigate('/settings/typing')} aria-label="تخصيص مؤشر الكتابة" className="hover:text-[var(--primary)]"><PenTool size={20} /></button>
+              <button onClick={() => navigate('/settings/theme')} aria-label="إعدادات المظهر" className="hover:text-[var(--primary)]"><Palette size={20} /></button>
+              <button onClick={() => navigate('/archived')} aria-label="المحادثات المؤرشفة" className="hover:text-[var(--primary)]"><Archive size={20} /></button>
+              <button onClick={() => navigate('/notifications')} aria-label="التنبيهات" className="hover:text-[var(--primary)]"><Bell size={20} /></button>
+              <button onClick={() => navigate('/dashboard')} aria-label="الواجهة الرئيسية" className="hover:text-[var(--primary)]"><LayoutGrid size={20} /></button>
               <button 
                 onClick={async () => {
                   if (window.confirm('هل أنت متأكد من تسجيل الخروج؟')) {
@@ -529,7 +530,8 @@ const ConversationListScreen: React.FC = () => {
                   }
                 }} 
                 aria-label="تسجيل الخروج" 
-                className="hover:text-red-500 text-slate-500 dark:text-slate-400 transition-colors"
+                className="hover:text-red-500 transition-colors"
+                style={{ color: 'var(--shagram-text-muted)' }}
               >
                 <LogOut size={20} />
               </button>

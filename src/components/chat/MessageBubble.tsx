@@ -6,6 +6,11 @@ import { isLocationMessage } from '../../utils/messageHelpers';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../services/supabase';
 import { useMediaViewer } from '../../context/MediaViewerContext';
+import { useChatReactions } from '../../hooks/useChatReactions';
+import { ReactionToolbar } from './ReactionToolbar';
+import { ReactionListDialog } from './ReactionListDialog';
+import { getUserData } from '../../services/UserDataCache';
+import { toast } from 'react-hot-toast';
 
 // ✅ استيراد المكونات الفرعية
 import {
@@ -27,8 +32,9 @@ interface MessageBubbleProps {
   isOwnMessage: boolean;
   onLongPress: (target: EventTarget | null, message: Message) => void;
   isSelected?: boolean;
+  selectedMessagesCount?: number;
   onClick?: (message: Message, e?: React.MouseEvent | React.TouchEvent) => void;
-  onDoubleClick?: (message: Message, e?: React.MouseEvent | React.TouchEvent) => void; // ✅ جديد
+  onDoubleClick?: (message: Message, e?: React.MouseEvent | React.TouchEvent) => void;
   senderAvatar?: string;
   senderUsername?: string;
 }
@@ -38,8 +44,9 @@ const MessageBubbleComponent: React.FC<MessageBubbleProps> = memo(({
   isOwnMessage,
   onLongPress,
   isSelected = false,
+  selectedMessagesCount = 0,
   onClick,
-  onDoubleClick, // ✅ جديد
+  onDoubleClick,
   senderAvatar,
   senderUsername
 }) => {
@@ -52,6 +59,9 @@ const MessageBubbleComponent: React.FC<MessageBubbleProps> = memo(({
   const [localUrl, setLocalUrl] = useState<string | null>((message as any).localUrl || (message as any).signedUrl || null);
   const [imageError, setImageError] = useState<boolean>(false);
   const [avatarError, setAvatarError] = useState<boolean>(false);
+  const [toolbarVisible, setToolbarVisible] = useState(false);
+  const [reactionsListVisible, setReactionsListVisible] = useState(false);
+  const [reactionParticipants, setReactionParticipants] = useState<{ user_id: string; name: string; emoji: string }[]>([]);
 
   // ✅ تحديث الرابط المحلي عند تغير الرسالة (مثلاً من Blob إلى R2 URL بعد الرفع)
   useEffect(() => {
@@ -64,6 +74,7 @@ const MessageBubbleComponent: React.FC<MessageBubbleProps> = memo(({
   // ✅ Hooks
   const { openMedia } = useMediaViewer();
   const { user } = useAuth();
+  const { toggleReaction, removeReaction } = useChatReactions();
 
   // ✅ البيانات المحسوبة
   const computedData = useMemo(() => {
@@ -226,7 +237,7 @@ const MessageBubbleComponent: React.FC<MessageBubbleProps> = memo(({
         <span className={`font-bold mb-0.5 ${isOwnMessage ? 'text-white' : 'text-indigo-600 dark:text-indigo-300'}`}>
           {senderName}
         </span>
-        <span className={`truncate max-w-[200px] ${isOwnMessage ? 'text-white/80' : 'text-gray-600 dark:text-gray-300'}`}>
+        <span className={`truncate max-w-[200px] ${isOwnMessage ? 'text-white/80' : 'text-[var(--shagram-text-muted)]'}`}>
           {reply.message_type === 'image' ? '📷 صورة' :
             reply.message_type === 'video' ? '🎥 فيديو' :
               reply.message_type === 'audio' ? '🎤 تسجيل صوتي' :
@@ -386,14 +397,20 @@ const MessageBubbleComponent: React.FC<MessageBubbleProps> = memo(({
           {...longPressEvents}
           id={`message-${message.id}`}
           data-id={message.id}
+          onClick={(e) => {
+            if (isSelected || selectedMessagesCount > 0) {
+              onClick?.(message, e);
+            } else {
+              setToolbarVisible(!toolbarVisible);
+            }
+          }}
           className={`${message.message_type === 'forwarded_block'
             ? 'w-full min-w-[85vw] max-w-[95vw]'
             : (computedData.isMedia ? 'w-full max-w-[95vw] md:max-w-[60vw]' : 'max-w-xs md:max-w-md lg:max-w-lg')}
-            ${computedData.isMedia ? 'p-0' : 'px-4 py-2'} rounded-2xl ${message.message_type === 'forwarded_block'
-              ? (isOwnMessage ? 'bg-indigo-50 border-2 border-indigo-300' : 'bg-gray-50 border-2 border-gray-300')
-              : (isOwnMessage ? 'text-white shadow-md' : 'dark:text-gray-800 shadow-sm')
-            } touch-manipulation select-none transition-all duration-200
+            ${computedData.isMedia ? 'p-0' : 'px-4 py-2'} rounded-2xl ${isOwnMessage ? 'text-white shadow-md' : 'shadow-sm'} 
+            touch-manipulation select-none transition-all duration-200 relative
             ${message.isDeleted && !isOwnMessage ? 'opacity-0 h-2 w-2 overflow-hidden p-0 m-0' : ''} 
+            ${isSelected ? 'scale-[0.98] ring-4 ring-emerald-500 ring-offset-2 dark:ring-offset-slate-900 border-2 border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.4)]' : ''}
             `}
           style={{
             ...(
@@ -404,24 +421,28 @@ const MessageBubbleComponent: React.FC<MessageBubbleProps> = memo(({
                     ? { background: 'var(--gradient-primary)' }
                     : {
                       backgroundColor: 'var(--message-received-bg)',
-                      border: '1px solid var(--message-received-border)'
+                      border: '1px solid var(--message-received-border)',
+                      color: 'var(--shagram-text)'
                     }
                   )
-            ),
-            ...(isSelected ? {
-              border: '4px solid #10b981',
-              boxShadow: '0 0 0 2px rgba(16, 185, 129, 0.2)'
-            } : {})
+            )
           }}
         >
           {!(message.isDeleted && !isOwnMessage) && (
             <>
+              {/* Buzz Counter Badge */}
+              {message.buzz_count && message.buzz_count > 1 && (
+                <div className="absolute -top-2 -left-2 bg-red-600 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-lg border-2 border-white dark:border-slate-900 animate-bounce-subtle z-20">
+                  {message.buzz_count}
+                </div>
+              )}
+
               {renderReply()}
               {renderMessageContent()}
+              
               <div
-                className={`flex items-center justify-end text-xs mt-1 w-full gap-1 ${isOwnMessage ? 'text-white/70' : 'text-gray-500'}
-                  } ${computedData.isMedia ? 'px-2 py-1' : ''}`}
-                style={{ minHeight: 18 }}
+                className={`flex items-center justify-end text-xs mt-1 w-full gap-1 ${computedData.isMedia ? 'px-2 py-1' : ''}`}
+                style={{ minHeight: 18, color: isOwnMessage ? 'rgba(255,255,255,0.7)' : 'var(--shagram-text-muted)' }}
               >
                 <span>{formatTime(message.timestamp)}</span>
                 {/* تم إزالة علامة الصح القديمة واستبدالها بالنقطة الخارجية */}
@@ -429,6 +450,64 @@ const MessageBubbleComponent: React.FC<MessageBubbleProps> = memo(({
                   <AlertCircle size={12} className="text-red-400" />
                 )}
               </div>
+
+              {/* Reactions Bar */}
+              {message.reactions && Object.keys(message.reactions).length > 0 && (
+                <div 
+                  className={`mt-1 flex flex-wrap gap-1 cursor-pointer ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    // جلب أسماء المشاركين
+                    const participants = [];
+                    for (const [uid, emoji] of Object.entries(message.reactions as Record<string, string>)) {
+                      const userData = await getUserData(uid, supabase);
+                      participants.push({
+                        user_id: uid,
+                        name: (userData as any)?.full_name || userData?.username || 'مستخدم شامي',
+                        emoji: emoji
+                      });
+                    }
+                    setReactionParticipants(participants);
+                    setReactionsListVisible(true);
+                  }}
+                >
+                  {Object.entries(message.reactions).map(([userId, emoji]) => (
+                    <div 
+                      key={`${userId}-${emoji}`}
+                      className="bg-white/30 dark:bg-black/30 backdrop-blur-sm rounded-full px-1.5 py-0.5 text-sm shadow-sm border border-white/20 hover:scale-110 transition-transform"
+                    >
+                      {emoji}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Reaction Toolbar & List Dialog */}
+              <ReactionToolbar 
+                isVisible={toolbarVisible}
+                position={isOwnMessage ? 'top' : 'bottom'}
+                onClose={() => setToolbarVisible(false)}
+                onReact={(emoji) => {
+                  if (user) toggleReaction(message.id, user.id, emoji);
+                  setToolbarVisible(false);
+                }}
+                onCopy={() => {
+                  navigator.clipboard.writeText(message.text || '');
+                  toast.success('تم نسخ نص الرسالة');
+                  setToolbarVisible(false);
+                }}
+              />
+
+              <ReactionListDialog 
+                isVisible={reactionsListVisible}
+                participants={reactionParticipants}
+                currentUserId={user?.id}
+                onClose={() => setReactionsListVisible(false)}
+                onRemove={(emoji) => {
+                  if (user) removeReaction(message.id, user.id);
+                  setReactionsListVisible(false);
+                }}
+              />
             </>
           )}
         </div>

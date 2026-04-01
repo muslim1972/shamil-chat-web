@@ -5,6 +5,7 @@ import { useLocation } from './useLocation';
 import { useMessageHandlers } from './useMessageHandlers';
 import { useMessageActions } from './useMessageActions';
 import { useMessageEdit } from './useMessageEdit';
+import { useChatReactions } from './useChatReactions';
 import type { Message } from '../types';
 
 interface UseChatActionsProps {
@@ -70,6 +71,9 @@ export function useChatActions({
     // Typing Indicators
     const { typingUsers, isTyping, emitTyping, emitTypingStop } = useTyping(conversationId, userId);
 
+    // Reactions
+    const { toggleReaction } = useChatReactions();
+
     // Audio Recording
     const sendAudioMessage = useCallback(async (audioBlob: Blob, duration: number, caption?: string) => {
         await sendAudio(audioBlob, duration, caption);
@@ -94,6 +98,8 @@ export function useChatActions({
         clearSelection,
         setReplyingToMessage, // ✅ جديد
         inputRef, // ✅ جديد
+        userId, // ✅ جديد لدعم التفاعلات
+        toggleReaction, // ✅ جديد
     });
 
     // Message Actions (delete, forward, pin, etc.)

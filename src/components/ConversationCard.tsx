@@ -94,7 +94,7 @@ export const ConversationCard: React.FC<ConversationCardProps> = React.memo(({
 
     return (
         <div
-            className={`p-3 sm:p-4 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer transition-all duration-200 border-b border-slate-200 dark:border-slate-700 ${isSelected ? 'bg-blue-100 dark:bg-blue-900' : ''}`}
+            className={`p-3 sm:p-4 hover:bg-[var(--conversation-card-hover)] cursor-pointer transition-all duration-200 border-b border-[var(--shagram-border)] ${isSelected ? 'bg-[var(--primary-light)]' : 'bg-[var(--conversation-card-bg)]'}`}
             data-id={conversation.id}
             style={cardBorderStyle}
             {...(isForwarding ? { onClick } : longPressEvents)}
@@ -117,7 +117,7 @@ export const ConversationCard: React.FC<ConversationCardProps> = React.memo(({
                 <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-center mb-1">
                         <div className="flex items-center gap-2 min-w-0">
-                            <p className={`text-sm font-semibold truncate ${conversation.unread ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-900 dark:text-slate-50'}`}>
+                            <p className={`text-sm font-semibold truncate ${conversation.unread ? 'text-[var(--primary)]' : 'text-[var(--shagram-text)]'}`}>
                                 {showGroupLabel ? 'محادثة جماعية' : (conversation.name || 'مستخدم غير معروف')}
                             </p>
                             {/* Online Indicator */}
@@ -129,7 +129,7 @@ export const ConversationCard: React.FC<ConversationCardProps> = React.memo(({
                             {formattedTimestamp}
                         </span>
                     </div>
-                    <p className={`text-sm truncate ${conversation.unread ? 'text-slate-900 dark:text-slate-100 font-semibold' : 'text-slate-700 dark:text-slate-400'}`}>
+                    <p className={`text-sm truncate ${conversation.unread ? 'text-[var(--shagram-text)] font-semibold' : 'text-[var(--shagram-text-muted)]'}`}>
                         {lastMessageDisplay}
                     </p>
                 </div>

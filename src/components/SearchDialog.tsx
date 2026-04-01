@@ -84,13 +84,18 @@ const SearchDialog: React.FC<SearchDialogProps> = ({
   return (
     <div className="relative w-full">
       <div className="relative flex items-center">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-indigo-500 dark:text-indigo-400" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[var(--primary)]" />
         <Input
           ref={searchInputRef}
           placeholder="ابحث عن مستخدم بالاسم أو البريد الإلكتروني"
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
-          className="pl-10 pr-12 py-3 text-right border-2 bg-white dark:bg-slate-700 border-indigo-200 dark:border-slate-600 focus:border-indigo-500 dark:focus:border-indigo-400 rounded-lg shadow-sm transition-colors text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
+          className="pl-10 pr-12 py-3 text-right border-2 rounded-lg shadow-sm transition-colors placeholder:text-slate-400"
+          style={{ 
+            background: 'var(--conversation-card-bg)', 
+            borderColor: 'var(--shagram-border)',
+            color: 'var(--shagram-text)' 
+          }}
           dir="rtl"
         />
         {searchText && (
@@ -99,7 +104,8 @@ const SearchDialog: React.FC<SearchDialogProps> = ({
               variant="ghost"
               size="icon"
               onClick={() => setSearchText('')}
-              className="h-8 w-8 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-slate-600 rounded-full"
+              className="h-8 w-8 rounded-full"
+              style={{ color: 'var(--primary)' }}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
@@ -116,10 +122,14 @@ const SearchDialog: React.FC<SearchDialogProps> = ({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="absolute right-0 mt-1 w-56 bg-white dark:bg-slate-800 border border-indigo-200 dark:border-slate-700 rounded-xl shadow-xl z-50 overflow-hidden"
+            className="absolute right-0 mt-1 w-56 border rounded-xl shadow-xl z-50 overflow-hidden"
+            style={{ 
+              background: 'var(--conversation-card-bg)', 
+              borderColor: 'var(--shagram-border)' 
+            }}
           >
-            <div className="p-3 bg-indigo-50 dark:bg-indigo-900/20 border-b border-indigo-100 dark:border-indigo-800">
-              <div className="text-sm text-indigo-700 dark:text-indigo-300 font-medium">خيارات QR</div>
+            <div className="p-3 border-b" style={{ background: 'var(--header-bg)', borderColor: 'var(--shagram-border)' }}>
+              <div className="text-sm font-medium" style={{ color: 'var(--primary)' }}>خيارات QR</div>
             </div>
             <Button
               variant="ghost"
@@ -131,8 +141,8 @@ const SearchDialog: React.FC<SearchDialogProps> = ({
                   <Image className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                 </div>
                 <div className="text-right">
-                  <div className="font-medium text-slate-800 dark:text-slate-100">من الاستوديو</div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">إنشاء رمز QR من صورة</div>
+                  <div className="font-medium" style={{ color: 'var(--shagram-text)' }}>من الاستوديو</div>
+                  <div className="text-xs" style={{ color: 'var(--shagram-text-muted)' }}>إنشاء رمز QR من صورة</div>
                 </div>
               </div>
             </Button>
@@ -161,7 +171,11 @@ const SearchDialog: React.FC<SearchDialogProps> = ({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
-            className="absolute right-0 mt-1 w-full bg-white dark:bg-slate-800 border border-indigo-200 dark:border-slate-700 rounded-lg shadow-xl z-40 max-h-96 overflow-y-auto"
+            className="absolute right-0 mt-1 w-full border rounded-lg shadow-xl z-40 max-h-96 overflow-y-auto"
+            style={{ 
+              background: 'var(--conversation-card-bg)', 
+              borderColor: 'var(--shagram-border)' 
+            }}
           >
             {isLoading ? (
               <div className="p-6 text-center flex flex-col items-center justify-center">
@@ -176,8 +190,9 @@ const SearchDialog: React.FC<SearchDialogProps> = ({
                 {users.map((user) => (
                   <motion.div
                     key={user.id}
-                    whileHover={{ backgroundColor: "rgba(99, 102, 241, 0.1)" }}
-                    className="p-4 cursor-pointer border-b border-slate-100 dark:border-slate-700 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
+                    whileHover={{ backgroundColor: "var(--conversation-card-hover)" }}
+                    className="p-4 cursor-pointer border-b transition-colors"
+                    style={{ borderColor: 'var(--shagram-border)' }}
                     onClick={() => handleUserSelect(user)}
                   >
                     <div className="flex items-center">
@@ -189,7 +204,7 @@ const SearchDialog: React.FC<SearchDialogProps> = ({
                         </div>
                       )}
                       <div className="flex-1">
-                        <div className="font-semibold text-slate-800 dark:text-slate-100">{user.username}</div>
+                        <div className="font-semibold" style={{ color: 'var(--shagram-text)' }}>{user.username}</div>
                       </div>
                       <div className="text-indigo-500 dark:text-indigo-400">
                         <MessageSquarePlus size={18} />

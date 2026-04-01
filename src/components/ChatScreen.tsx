@@ -32,6 +32,7 @@ import { useChatState } from '../hooks/useChatState';
 import { useChatActions } from '../hooks/useChatActions';
 import { useSendMessage } from '../hooks/useSendMessage';
 import { useActionsProcessor } from '../hooks/useActionsProcessor';
+import { useChatExtras } from '../hooks/useChatExtras';
 // ✅ Hook للتعامل مع الكيبورد على الأجهزة القديمة
 import { useKeyboardLayout } from '../hooks/useKeyboardLayout';
 import { useTheme } from '../context/ThemeContext';
@@ -43,6 +44,7 @@ import { ScheduleMessageSheet, ScheduledMessagesList } from './schedule';
 import { useScheduledMessages } from '../hooks/useScheduledMessages';
 import type { CreateScheduledMessageParams } from '../types/scheduledMessages.types';
 import { toast } from 'react-hot-toast';
+import { SelectionHeader } from './chat/SelectionHeader';
 
 interface ChatInterfaceProps {
   conversationId: string;
@@ -80,6 +82,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ conversationId, onSendAle
 
   const isSelectionMode = selectionMode !== 'none';
   const selectedMessages = selectedItems as Message[];
+
+  const { triggerAction } = useGlobalUIStore();
 
   // ✅ Composite State Hook - جميع حالات الدردشة في هوك واحد
   const {
@@ -305,6 +309,19 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ conversationId, onSendAle
 
   const { handleLoadOlder } = useLoadMessages({ loadOlder, containerRef });
 
+  // ✅ جلب البيانات الإضافية (تفاعلات وعدادات) من الجداول المنفصلة
+  const displayedMessageIds = React.useMemo(() => displayedMessages.map(m => m.id), [displayedMessages]);
+  const chatExtras = useChatExtras(displayedMessageIds);
+
+  // دمج البيانات الإضافية في الرسائل المعروضة
+  const enrichedMessages = React.useMemo(() => {
+    return displayedMessages.map(msg => ({
+      ...msg,
+      reactions: chatExtras[msg.id]?.reactions || msg.reactions,
+      buzz_count: chatExtras[msg.id]?.buzz_count || msg.buzz_count
+    }));
+  }, [displayedMessages, chatExtras]);
+
   // Send message handler
   const { handleSendMessage } = useSendMessage({
     conversationId,
@@ -398,6 +415,27 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ conversationId, onSendAle
         onScheduledMessagesClick={() => setIsScheduledListOpen(true)}
       />
 
+      {/* NEW: Selection Header */}
+      {isSelectionMode && (
+        <SelectionHeader 
+          count={selectedMessages.length}
+          onClear={clearSelection}
+          onDelete={() => triggerAction('deleteForAll')}
+          onCopy={() => {
+            const textToCopy = selectedMessages.map(m => m.text).join('\n---\n');
+            navigator.clipboard.writeText(textToCopy);
+            toast.success('تم نسخ الرسائل');
+            clearSelection();
+          }}
+          onForward={() => triggerAction('forward')}
+          onSelectAll={() => {
+            // تحديث العناصر المختارة بكافة الرسائل المحملة
+            const store = useGlobalUIStore.getState();
+            store.setSelectedItems(displayedMessages);
+          }}
+        />
+      )}
+
       {/* Pinned Message Section */}
       <PinnedMessageBanner
         pinnedMessage={pinnedMessage}
@@ -430,7 +468,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ conversationId, onSendAle
         ) : (
           <div className="flex-1 flex flex-col justify-end">
             <MessageList
-              messages={displayedMessages}
+              messages={enrichedMessages}
               loading={loadingCached}
               messagesEndRef={messagesEndRef}
               onMessageLongPress={handleMessageLongPress}

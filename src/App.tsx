@@ -25,6 +25,8 @@ const ConversationListScreen = React.lazy(() => import('./components/Conversatio
 const ChatScreen = React.lazy(() => import('./components/ChatScreen.tsx'));
 const ArchivedConversationsScreen = React.lazy(() => import('./components/ArchivedConversationsScreen.tsx'));
 const UnifiedProfile = React.lazy(() => import('./components/profile/UnifiedProfile.tsx'));
+const ThemeSettingsPage = React.lazy(() => import('./features/theme/ThemeSettingsPage.tsx'));
+const TypingSettingsPage = React.lazy(() => import('./features/typing-indicator/TypingSettingsPage.tsx'));
 
 const AppRoutes: React.FC = () => {
   const { user, loading } = useAuth();
@@ -56,6 +58,8 @@ const AppRoutes: React.FC = () => {
           <Route path="/archived" element={<ArchivedConversationsScreen />} />
           <Route path="/profile" element={<UnifiedProfile />} />
           <Route path="/profile/:userId" element={<UnifiedProfile />} />
+          <Route path="/settings/theme" element={<ThemeSettingsPage />} />
+          <Route path="/settings/typing" element={<TypingSettingsPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" />} />
