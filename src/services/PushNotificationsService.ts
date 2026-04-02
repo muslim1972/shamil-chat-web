@@ -3,6 +3,8 @@ import { Device } from '@capacitor/device';
 import { Capacitor } from '@capacitor/core';
 import { supabase } from './supabase';
 import { summarizeForNotification } from '../utils/messagePreview';
+import { getMessaging, getToken, onMessage } from 'firebase/messaging';
+import app from '../firebaseConfig';
 
 // دعم Web Push Protocol API
 const publicVapidKey = import.meta.env.VITE_PUBLIC_VAPID_KEY;
@@ -305,23 +307,39 @@ export class PushNotificationsService {
         }
 
         if (originIsCapLocalhost) return;
-        // تسجيل ملف firebase-messaging-sw.js المخصص
-        await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+        const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+        if (import.meta.env.DEV) console.log('Service Worker registered successfully');
 
-        const registration = await navigator.serviceWorker.ready;
         const permission = await Notification.requestPermission();
+        if (import.meta.env.DEV) console.log('Permission status:', permission);
 
         if (permission !== 'granted') {
           console.warn('Notification permission denied');
           return;
         }
 
-        const subscription = await registration.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: this.urlBase64ToUint8Array(publicVapidKey) as any
-        });
+        // الحصول على رمز FCM للويب باستخدام Firebase Messaging SDK
+        const messaging = getMessaging(app);
+        
+        try {
+          const fcmToken = await getToken(messaging, {
+            vapidKey: publicVapidKey,
+            serviceWorkerRegistration: registration
+          });
 
-        await this.saveWebPushSubscriptionToDatabase(subscription);
+          if (fcmToken) {
+            console.log('🚀 FCM Token generated successfully');
+            await this.saveTokenToDatabaseForWeb(fcmToken);
+            // إعلام المستخدم بالنجاح (لأغراض الاختبار فقط)
+            if (import.meta.env.DEV) alert('Push Notifications Registered Successfully!');
+          } else {
+            console.warn('No FCM token received');
+            if (import.meta.env.DEV) alert('Failed to get FCM Token');
+          }
+        } catch (tokenError) {
+          console.error('Error getting FCM token:', tokenError);
+          if (import.meta.env.DEV) alert('Error getting Token: ' + (tokenError as any).message);
+        }
       } catch (error) {
         console.error('Error initializing web push notifications:', error);
       }
@@ -349,27 +367,29 @@ export class PushNotificationsService {
   }
 
   /**
-   * حفظ اشتراك إشعارات الويب في قاعدة البيانات
+   * حفظ رمز إشعارات الويب في قاعدة البيانات
    */
-  private async saveWebPushSubscriptionToDatabase(subscription: PushSubscription): Promise<void> {
+  private async saveTokenToDatabaseForWeb(token: string): Promise<void> {
     try {
       const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
-        console.warn('User not authenticated, cannot save push subscription');
+        console.warn('User not authenticated, cannot save push token');
         return;
       }
-
-      const subscriptionJson = subscription.toJSON();
 
       const { error } = await supabase
         .from('push_subscriptions')
         .upsert(
           {
             user_id: user.id,
-            subscription: subscriptionJson,
-            endpoint: subscription.endpoint,
-            app_name: 'shamil_chat_pwa', // تمييز التطبيق الجديد
+            subscription: {
+              token,
+              platform: 'web',
+              app: 'shamil_chat_pwa'
+            },
+            endpoint: token,
+            app_name: 'shamil_chat_pwa',
           },
           {
             onConflict: 'endpoint',
@@ -377,10 +397,12 @@ export class PushNotificationsService {
         );
 
       if (error) {
-        console.error('Error saving push subscription to database:', error);
+        console.error('Error saving web push token to database:', error);
+      } else {
+        if (import.meta.env.DEV) console.log('Web push token saved successfully');
       }
     } catch (error) {
-      console.error('Error in saveWebPushSubscriptionToDatabase:', error);
+      console.error('Error in saveTokenToDatabaseForWeb:', error);
     }
   }
 

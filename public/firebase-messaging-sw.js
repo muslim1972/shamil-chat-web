@@ -1,8 +1,7 @@
-// Scripts for firebase and firebase messaging
+// Firebase Cloud Messaging Service Worker
 importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js');
 
-// Initialize the Firebase app in the service worker by passing in the messagingSenderId
 firebase.initializeApp({
     apiKey: "AIzaSyAkEErL1RV04Uza1cH553Lcp1drrIOaznQ",
     authDomain: "shamilapp-d61f0.firebaseapp.com",
@@ -12,29 +11,29 @@ firebase.initializeApp({
     appId: "1:532939856893:web:82091d6e557a54a7389794"
 });
 
-// Retrieve an instance of Firebase Messaging so that it can handle background messages.
 const messaging = firebase.messaging();
 
+// التعامل مع الرسائل في الخلفية
 messaging.onBackgroundMessage((payload) => {
     console.log('[firebase-messaging-sw.js] Received background message ', payload);
     
-    // تخصيص كيفية ظهور الإشعار
-    const notificationTitle = payload.notification.title || 'رسالة جديدة';
+    // استخراج البيانات
+    const notificationTitle = payload.notification?.title || payload.data?.title || 'رسالة جديدة';
     const notificationOptions = {
-        body: payload.notification.body || 'لديك إشعار جديد في شقردي',
+        body: payload.notification?.body || payload.data?.body || 'لديك إشعار جديد',
         icon: '/favicon.svg',
         badge: '/favicon.svg',
         data: payload.data
     };
 
-    self.registration.showNotification(notificationTitle, notificationOptions);
+    return self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
 // التعامل مع النقر على الإشعار
 self.addEventListener('notificationclick', function(event) {
     event.notification.close();
     
-    // استخراج الرابط من البيانات المرسلة
+    // الحصول على الرابط من fcm_options.link أو data.link
     const targetUrl = event.notification.data?.link || '/';
 
     event.waitUntil(
