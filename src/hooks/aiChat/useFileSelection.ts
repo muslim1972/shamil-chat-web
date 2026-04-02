@@ -2,7 +2,7 @@
 // هوك موحد لاختيار ومعالجة الملفات (صور + نصوص + PDF + Docs)
 
 import { useState, useCallback } from 'react';
-import { prepareImagesForAI } from '../../utils/imageCompression';
+import { prepareImagesForAI } from '../../utils/media/compression/imageCompression';
 // import mammoth from 'mammoth'; // Removed for optimization
 
 /** أنواع الملفات المدعومة */

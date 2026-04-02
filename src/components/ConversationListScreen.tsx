@@ -11,7 +11,7 @@ import useLongPress from '../hooks/useLongPress';
 import type { Conversation } from '../types';
 import { formatDistanceToNow } from 'date-fns';
 import { ar } from 'date-fns/locale';
-import { Archive, QrCode, X, LayoutGrid, PenTool, Bell, LogOut, Palette, Trash2 } from 'lucide-react';
+import { Archive, QrCode, X, PenTool, Palette, Trash2 } from 'lucide-react';
 import SearchDialog from './SearchDialog';
 import { QRScannerDialog } from './QRScannerDialog';
 import { processQRImage } from '../utils/qrScannerUtils';
@@ -542,8 +542,6 @@ const ConversationListScreen: React.FC = () => {
                 <button onClick={() => navigate('/settings/typing')} aria-label="تخصيص مؤشر الكتابة" className="hover:text-[var(--primary)]"><PenTool size={20} /></button>
                 <button onClick={() => navigate('/settings/theme')} aria-label="إعدادات المظهر" className="hover:text-[var(--primary)]"><Palette size={20} /></button>
                 <button onClick={() => navigate('/archived')} aria-label="المحادثات المؤرشفة" className="hover:text-[var(--primary)]"><Archive size={20} /></button>
-                <button onClick={() => navigate('/notifications')} aria-label="التنبيهات" className="hover:text-[var(--primary)]"><Bell size={20} /></button>
-                <button onClick={() => navigate('/dashboard')} aria-label="الواجهة الرئيسية" className="hover:text-[var(--primary)]"><LayoutGrid size={20} /></button>
                 <button 
                   onClick={async () => {
                     if (window.confirm('هل أنت متأكد من تسجيل الخروج؟')) {
@@ -551,11 +549,9 @@ const ConversationListScreen: React.FC = () => {
                       navigate('/auth');
                     }
                   }} 
-                  aria-label="تسجيل الخروج" 
-                  className="hover:text-red-500 transition-colors"
-                  style={{ color: 'var(--shagram-text-muted)' }}
+                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all shadow-sm hover:shadow-md active:scale-95"
                 >
-                  <LogOut size={20} />
+                  تسجيل الخروج
                 </button>
               </div>
             </div>

@@ -1,6 +1,6 @@
 // src/hooks/aiChat/useImageSelection.ts
 import { useState, useCallback } from 'react';
-import { prepareImagesForAI } from '../../utils/imageCompression';
+import { prepareImagesForAI } from '../../utils/media/compression/imageCompression';
 
 export interface SelectedImage {
     file: File;

@@ -3,11 +3,11 @@
 // ==========================================
 
 // EXIF
-export { readExif, type ExifMetadata } from './exif/exifReader';
-export { stripExif } from './exif/exifStripper';
+export { readExif, type ExifMetadata } from './media/exif/exifReader';
+export { stripExif } from './media/exif/exifStripper';
 
 // BlurHash
-export { generateBlurhash, generateBlurhashFromVideo } from './blurhash/generator';
+export { generateBlurhash, generateBlurhashFromVideo } from './media/blurhash/generator';
 
 // Compression
 export {
@@ -16,29 +16,34 @@ export {
     isWebCodecsSupported,
     isOffscreenCanvasSupported,
     type CompressionMethod
-} from './compression/compressionStrategy';
+} from './media/compression/compressionStrategy';
 
 export {
     compressImage,
     type ImageCompressionOptions,
     type ImageMetadata
-} from './compression/imageCompressor';
+} from './media/compression/imageCompressor';
+
+export {
+    prepareImagesForAI,
+    prepareImageForAI
+} from './media/compression/imageCompression';
 
 export {
     compressVideo,
     shouldCompressVideo,
     type VideoCompressionOptions
-} from './compression/videoCompressor';
+} from './media/compression/videoCompressor';
 
 // Metadata
 export {
     extractCompleteMetadata,
     type CompleteMediaMetadata
-} from './metadata/extractor';
+} from './media/metadata/extractor';
 
 // Pipeline (المنسق الرئيسي)
 export {
     processMediaForSending,
     cleanupProcessingResult,
     type ProcessingResult
-} from './pipeline/mediaProcessor';
+} from './media/pipeline/mediaProcessor';

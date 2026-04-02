@@ -1,7 +1,7 @@
 // src/hooks/aiChat/useSendAIWithImages.ts
 import { useState, useCallback } from 'react';
 import { supabase } from '../../services/supabase';
-import { prepareImagesForAI } from '../../utils/imageCompression';
+import { prepareImagesForAI } from '../../utils/media/compression/imageCompression';
 
 /** Hook لإرسال رسائل نصية + صور لمحادثات AI */
 export function useSendAIWithImages(conversationId: string, userId?: string) {

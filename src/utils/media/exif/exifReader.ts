@@ -3,7 +3,8 @@
 // ✅ مع معالجة كاملة للأخطاء و timeout
 //==========================================
 
-import EXIF from 'exif-js';
+// @ts-ignore
+import EXIF from './lib/exif-patched';
 
 export interface ExifMetadata {
     width: number;
