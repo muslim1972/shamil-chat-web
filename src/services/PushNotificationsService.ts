@@ -279,14 +279,9 @@ export class PushNotificationsService {
    */
   private async initializeWebPushNotifications(): Promise<void> {
     try {
-      if (import.meta.env.DEV) {
-        if (typeof location !== 'undefined') {
-          const isViteLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-          if (isViteLocal) {
-            if (import.meta.env.DEV) console.log('Initializing web push on DEV localhost...');
-            // السماح بالتهيئة في التطوير لاختبار الـ PWA
-          }
-        }
+      // تفعيل دائم لإشعارات الويب في الـ PWA
+      if (typeof location !== 'undefined') {
+          console.log('Initializing web push on:', location.hostname);
       }
 
       const originIsCapLocalhost = typeof location !== 'undefined' && location.origin === 'https://localhost';
@@ -306,15 +301,17 @@ export class PushNotificationsService {
           return;
         }
 
-        if (originIsCapLocalhost) return;
+        // 1. تسجيل ملف firebase-messaging-sw.js المخصص
+        console.log('Registering Service Worker...');
         const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-        if (import.meta.env.DEV) console.log('Service Worker registered successfully');
+        console.log('Service Worker registered successfully');
 
+        // 2. طلب الإذن
         const permission = await Notification.requestPermission();
-        if (import.meta.env.DEV) console.log('Permission status:', permission);
+        console.log('Permission status:', permission);
 
         if (permission !== 'granted') {
-          console.warn('Notification permission denied');
+          alert('⚠️ لقد قمت برفض إذن الإشعارات في المتصفح. يرجى تفعيله من إعدادات الموقع.');
           return;
         }
 
@@ -322,23 +319,22 @@ export class PushNotificationsService {
         const messaging = getMessaging(app);
         
         try {
+          console.log('Getting FCM Token from Firebase...');
           const fcmToken = await getToken(messaging, {
             vapidKey: publicVapidKey,
             serviceWorkerRegistration: registration
           });
 
           if (fcmToken) {
-            console.log('🚀 FCM Token generated successfully');
+            console.log('🚀 FCM Token generated:', fcmToken);
             await this.saveTokenToDatabaseForWeb(fcmToken);
-            // إعلام المستخدم بالنجاح (لأغراض الاختبار فقط)
-            if (import.meta.env.DEV) alert('Push Notifications Registered Successfully!');
+            alert('✅ تم تفعيل إشعارات الويب بنجاح على هذا الجهاز!');
           } else {
-            console.warn('No FCM token received');
-            if (import.meta.env.DEV) alert('Failed to get FCM Token');
+            alert('❌ فشل الحصول على رمز الإشعارات (FCM Token is null)');
           }
         } catch (tokenError) {
           console.error('Error getting FCM token:', tokenError);
-          if (import.meta.env.DEV) alert('Error getting Token: ' + (tokenError as any).message);
+          alert('🚨 خطأ في الحصول على الرمز: ' + (tokenError as any).message);
         }
       } catch (error) {
         console.error('Error initializing web push notifications:', error);
