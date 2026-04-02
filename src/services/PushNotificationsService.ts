@@ -254,7 +254,8 @@ export class PushNotificationsService {
               platform: deviceInfo.platform,
               model: deviceInfo.model
             },
-            endpoint: token
+            endpoint: token,
+            app_name: 'shamil_chat_pwa' // تمييز التطبيق الجديد
           },
           {
             onConflict: 'endpoint'
@@ -280,8 +281,8 @@ export class PushNotificationsService {
         if (typeof location !== 'undefined') {
           const isViteLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
           if (isViteLocal) {
-            if (import.meta.env.DEV) console.log('Skipping web push init on DEV localhost');
-            return;
+            if (import.meta.env.DEV) console.log('Initializing web push on DEV localhost...');
+            // السماح بالتهيئة في التطوير لاختبار الـ PWA
           }
         }
       }
@@ -304,7 +305,8 @@ export class PushNotificationsService {
         }
 
         if (originIsCapLocalhost) return;
-        await navigator.serviceWorker.register('/sw.js');
+        // تسجيل ملف firebase-messaging-sw.js المخصص
+        await navigator.serviceWorker.register('/firebase-messaging-sw.js');
 
         const registration = await navigator.serviceWorker.ready;
         const permission = await Notification.requestPermission();
@@ -367,6 +369,7 @@ export class PushNotificationsService {
             user_id: user.id,
             subscription: subscriptionJson,
             endpoint: subscription.endpoint,
+            app_name: 'shamil_chat_pwa', // تمييز التطبيق الجديد
           },
           {
             onConflict: 'endpoint',

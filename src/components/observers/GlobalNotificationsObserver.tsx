@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { supabase } from '../../services/supabase';
 import { useAuth } from '../../context/AuthContext';
+import { pushNotificationsService } from '../../services/PushNotificationsService';
 
 export const GlobalNotificationsObserver: React.FC = () => {
   const { user } = useAuth();
@@ -9,6 +10,11 @@ export const GlobalNotificationsObserver: React.FC = () => {
 
   useEffect(() => {
     if (!userId) return;
+
+    // تهيئة خدمة إشعارات الدفع (Push)
+    pushNotificationsService.initialize().catch(err => {
+        console.error('[GlobalObserver] Failed to init PushNotifications:', err);
+    });
 
     // منع إنشاء قناة مكررة
     if (channelRef.current) return;
