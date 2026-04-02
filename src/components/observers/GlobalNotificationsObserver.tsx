@@ -12,6 +12,7 @@ export const GlobalNotificationsObserver: React.FC = () => {
     if (!userId) return;
 
     // تهيئة خدمة إشعارات الدفع (Push)
+    alert('[GlobalObserver] Calling initialize()...');
     pushNotificationsService.initialize().catch(err => {
         console.error('[GlobalObserver] Failed to init PushNotifications:', err);
     });
