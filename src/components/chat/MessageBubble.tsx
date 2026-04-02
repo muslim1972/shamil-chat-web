@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, memo, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, memo, useMemo, useRef } from 'react';
 import { AlertCircle } from 'lucide-react';
 import useLongPress from '../../hooks/useLongPress';
 import type { Message } from '../../types';
@@ -34,7 +34,6 @@ interface MessageBubbleProps {
   isSelected?: boolean;
   selectedMessagesCount?: number;
   onClick?: (message: Message, e?: React.MouseEvent | React.TouchEvent) => void;
-  onDoubleClick?: (message: Message, e?: React.MouseEvent | React.TouchEvent) => void;
   senderAvatar?: string;
   senderUsername?: string;
 }
@@ -46,7 +45,6 @@ const MessageBubbleComponent: React.FC<MessageBubbleProps> = memo(({
   isSelected = false,
   selectedMessagesCount = 0,
   onClick,
-  onDoubleClick,
   senderAvatar,
   senderUsername
 }) => {
@@ -394,134 +392,133 @@ const MessageBubbleComponent: React.FC<MessageBubbleProps> = memo(({
       )}
 
       {/* حاوية الفقاعة والنقطة */}
-      <div 
-        className="relative flex items-end"
-        style={{ zIndex: isSelected || toolbarVisible ? 50 : 1 }}
-      >
-        {/* النقطة - تم عكس المواقع بناءً على طلب المستخدم */}
-        {/* المرسل (يمين): النقطة يمين | المستلم (يسار): النقطة يسار */}
-        <MessageStatusDot
-          status={message.status}
-          isRead={(message as any).isRead}
-          isDeleted={message.isDeleted}
-          isSenderDeleted={message.isSenderDeleted} // ✅ تمرير الحالة الجديدة
-          isOwnMessage={isOwnMessage}
-          className={`absolute bottom-1 z-10 ${isOwnMessage ? '-right-4' : '-left-4'}`}
-        />
-
-        <div
-          {...longPressEvents}
-          id={`message-${message.id}`}
-          data-id={message.id}
-          className={`${message.message_type === 'forwarded_block'
-            ? 'w-full min-w-[85vw] max-w-[95vw]'
-            : (computedData.isMedia ? 'w-full max-w-[95vw] md:max-w-[60vw]' : 'max-w-xs md:max-w-md lg:max-w-lg')}
-            ${computedData.isMedia ? 'p-0' : 'px-4 py-2'} rounded-2xl ${isOwnMessage ? 'text-white shadow-md' : 'shadow-sm'} 
-            touch-manipulation select-none transition-all duration-200 relative
-            ${message.isDeleted && !isOwnMessage ? 'opacity-0 h-2 w-2 overflow-hidden p-0 m-0' : ''} 
-            ${isSelected ? 'scale-[0.98] ring-4 ring-emerald-500 ring-offset-2 dark:ring-offset-slate-900 border-2 border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.4)]' : ''}
-            `}
-          style={{
-            ...(
-              message.isDeleted && !isOwnMessage ? { transform: 'scale(0)' } : // إخفاء الرسالة المحذوفة للمستلم
-                message.message_type === 'forwarded_block'
-                  ? { width: '100%' }
-                  : (isOwnMessage
-                    ? { background: 'var(--gradient-primary)' }
-                    : {
-                      backgroundColor: 'var(--message-received-bg)',
-                      border: '1px solid var(--message-received-border)',
-                      color: 'var(--shagram-text)'
-                    }
-                  )
-            ),
-            zIndex: isSelected || toolbarVisible ? 50 : 1
-          }}
+        <div 
+          className={`relative flex flex-col ${isOwnMessage ? 'items-end' : 'items-start'}`}
+          style={{ zIndex: isSelected || toolbarVisible ? 50 : 1 }}
         >
-          {!(message.isDeleted && !isOwnMessage) && (
-            <>
-              {/* Buzz Counter Badge */}
-              {message.buzz_count && message.buzz_count > 1 && (
-                <div className="absolute -top-2 -left-2 bg-red-600 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-lg border-2 border-white dark:border-slate-900 animate-bounce-subtle z-20">
-                  {message.buzz_count}
-                </div>
-              )}
+          {/* حاوية الفقاعة والنقطة */}
+          <div className="flex items-end relative">
+            {/* النقطة - تم عكس المواقع بناءً على طلب المستخدم */}
+            <MessageStatusDot
+              status={message.status}
+              isRead={(message as any).isRead}
+              isDeleted={message.isDeleted}
+              isSenderDeleted={message.isSenderDeleted}
+              isOwnMessage={isOwnMessage}
+              className={`absolute bottom-1 z-10 ${isOwnMessage ? '-right-4' : '-left-4'}`}
+            />
 
-              {renderReply()}
-              {renderMessageContent()}
-              
-              <div
-                className={`flex items-center justify-end text-xs mt-1 w-full gap-1 ${computedData.isMedia ? 'px-2 py-1' : ''}`}
-                style={{ minHeight: 18, color: isOwnMessage ? 'rgba(255,255,255,0.7)' : 'var(--shagram-text-muted)' }}
-              >
-                <span>{formatTime(message.timestamp)}</span>
-                {/* تم إزالة علامة الصح القديمة واستبدالها بالنقطة الخارجية */}
-                {isOwnMessage && message.status === 'failed' && (
-                  <AlertCircle size={12} className="text-red-400" />
-                )}
-              </div>
-
-              {/* Reactions Bar */}
-              {message.reactions && Object.keys(message.reactions).length > 0 && (
-                <div 
-                  className={`mt-1 flex flex-wrap gap-1 cursor-pointer ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
-                  onClick={async (e) => {
-                    e.stopPropagation();
-                    // جلب أسماء المشاركين
-                    const participants = [];
-                    for (const [uid, emoji] of Object.entries(message.reactions as Record<string, string>)) {
-                      const userData = await getUserData(uid, supabase);
-                      participants.push({
-                        user_id: uid,
-                        name: (userData as any)?.full_name || userData?.username || 'مستخدم شامي',
-                        emoji: emoji
-                      });
-                    }
-                    setReactionParticipants(participants);
-                    setReactionsListVisible(true);
-                  }}
-                >
-                  {Object.entries(message.reactions).map(([userId, emoji]) => (
-                    <div 
-                      key={`${userId}-${emoji}`}
-                      className="bg-white/30 dark:bg-black/30 backdrop-blur-sm rounded-full px-1.5 py-0.5 text-sm shadow-sm border border-white/20 hover:scale-110 transition-transform"
-                    >
-                      {emoji}
+            <div
+              {...longPressEvents}
+              id={`message-${message.id}`}
+              data-id={message.id}
+              className={`${message.message_type === 'forwarded_block'
+                ? 'w-full min-w-[85vw] max-w-[95vw]'
+                : (computedData.isMedia ? 'w-full max-w-[95vw] md:max-w-[60vw]' : 'max-w-xs md:max-w-md lg:max-w-lg')}
+                ${computedData.isMedia ? 'p-0' : 'px-4 py-2'} rounded-2xl ${isOwnMessage ? 'text-white shadow-md' : 'shadow-sm'} 
+                touch-manipulation select-none transition-all duration-200 relative
+                ${message.isDeleted && !isOwnMessage ? 'opacity-0 h-2 w-2 overflow-hidden p-0 m-0' : ''} 
+                ${isSelected ? 'scale-[0.98] ring-4 ring-emerald-500 ring-offset-2 dark:ring-offset-slate-900 border-2 border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.4)]' : ''}
+                `}
+              style={{
+                ...(
+                  message.isDeleted && !isOwnMessage ? { transform: 'scale(0)' } :
+                    message.message_type === 'forwarded_block'
+                      ? { width: '100%' }
+                      : (isOwnMessage
+                        ? { background: 'var(--gradient-primary)' }
+                        : {
+                          backgroundColor: 'var(--message-received-bg)',
+                          border: '1px solid var(--message-received-border)',
+                          color: 'var(--shagram-text)'
+                        }
+                      )
+                )
+              }}
+            >
+              {!(message.isDeleted && !isOwnMessage) && (
+                <>
+                  {/* Buzz Counter Badge */}
+                  {message.buzz_count && message.buzz_count > 1 && (
+                    <div className="absolute -top-2 -left-2 bg-red-600 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-lg border-2 border-white dark:border-slate-900 animate-bounce-subtle z-20">
+                      {message.buzz_count}
                     </div>
-                  ))}
-                </div>
+                  )}
+
+                  {renderReply()}
+                  {renderMessageContent()}
+                  
+                  <div
+                    className={`flex items-center justify-end text-xs mt-1 w-full gap-1 ${computedData.isMedia ? 'px-2 py-1' : ''}`}
+                    style={{ minHeight: 18, color: isOwnMessage ? 'rgba(255,255,255,0.7)' : 'var(--shagram-text-muted)' }}
+                  >
+                    <span>{formatTime(message.timestamp)}</span>
+                    {isOwnMessage && message.status === 'failed' && (
+                      <AlertCircle size={12} className="text-red-400" />
+                    )}
+                  </div>
+                </>
               )}
+            </div>
+          </div>
 
-              {/* Reaction Toolbar & List Dialog */}
-              <ReactionToolbar 
-                isVisible={toolbarVisible}
-                position={isOwnMessage ? 'top' : 'bottom'}
-                onClose={() => setToolbarVisible(false)}
-                onReact={(emoji) => {
-                  if (user) toggleReaction(message.id, user.id, emoji);
-                  setToolbarVisible(false);
-                }}
-                onCopy={() => {
-                  navigator.clipboard.writeText(message.text || '');
-                  toast.success('تم نسخ نص الرسالة');
-                  setToolbarVisible(false);
-                }}
-              />
-
-              <ReactionListDialog 
-                isVisible={reactionsListVisible}
-                participants={reactionParticipants}
-                currentUserId={user?.id}
-                onClose={() => setReactionsListVisible(false)}
-                onRemove={(emoji) => {
-                  if (user) removeReaction(message.id, user.id);
-                  setReactionsListVisible(false);
-                }}
-              />
-            </>
+          {/* Reactions Bar - تم نقله للخارج ومحاذاته */}
+          {message.reactions && Object.keys(message.reactions).length > 0 && (
+            <div 
+              className={`mt-1 flex flex-wrap gap-1 cursor-pointer animate-in fade-in slide-in-from-top-1 duration-300 ${isOwnMessage ? 'justify-end pr-1' : 'justify-start pl-1'}`}
+              onClick={async (e) => {
+                e.stopPropagation();
+                const participants = [];
+                for (const [uid, emoji] of Object.entries(message.reactions as Record<string, string>)) {
+                  const userData = await getUserData(uid, supabase);
+                  participants.push({
+                    user_id: uid,
+                    name: (userData as any)?.full_name || userData?.username || 'مستخدم شامي',
+                    emoji: emoji
+                  });
+                }
+                setReactionParticipants(participants);
+                setReactionsListVisible(true);
+              }}
+            >
+              {Object.entries(message.reactions).map(([userId, emoji]) => (
+                <div 
+                  key={`${userId}-${emoji}`}
+                  className="bg-white/70 dark:bg-black/40 backdrop-blur-md rounded-full px-1.5 py-0.5 text-sm shadow-sm border border-white/50 dark:border-white/10 hover:scale-110 transition-transform flex items-center justify-center min-w-[28px] h-[24px]"
+                >
+                  {emoji}
+                </div>
+              ))}
+            </div>
           )}
+
+          {/* Reaction Toolbar & List Dialog */}
+          <ReactionToolbar 
+            isVisible={toolbarVisible}
+            position={isOwnMessage ? 'top' : 'bottom'}
+            onClose={() => setToolbarVisible(false)}
+            onReact={(emoji) => {
+              if (user) toggleReaction(message.id, user.id, emoji, message.conversationId);
+              setToolbarVisible(false);
+            }}
+            onCopy={() => {
+              navigator.clipboard.writeText(message.text || '');
+              toast.success('تم نسخ نص الرسالة');
+              setToolbarVisible(false);
+            }}
+          />
+
+          <ReactionListDialog 
+            isVisible={reactionsListVisible}
+            participants={reactionParticipants}
+            currentUserId={user?.id}
+            onClose={() => setReactionsListVisible(false)}
+            onRemove={(emoji) => {
+              if (user) removeReaction(message.id, user.id, message.conversationId);
+              setReactionsListVisible(false);
+            }}
+          />
         </div>
-      </div>
     </div>
   );
 });
@@ -547,6 +544,9 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(
       prevProps.message.isSenderDeleted === nextProps.message.isSenderDeleted && // ✅ فحص الحذف من المرسل
       prevProps.isOwnMessage === nextProps.isOwnMessage &&
       prevProps.isSelected === nextProps.isSelected &&
+      // ✅ فحص التفاعلات وعداد التنبيه (مهم لأنها تأتي من جدول منفصل)
+      JSON.stringify(prevProps.message.reactions) === JSON.stringify(nextProps.message.reactions) &&
+      prevProps.message.buzz_count === nextProps.message.buzz_count &&
       // ✅ إصلاح: فحص onClick و onLongPress - مهم لأنهما يعتمدان على isSelectionMode
       prevProps.onClick === nextProps.onClick &&
       prevProps.onLongPress === nextProps.onLongPress &&

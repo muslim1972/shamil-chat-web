@@ -11,7 +11,6 @@ interface MessageListProps {
   onMessageLongPress: (target: EventTarget | null, message: Message) => void;
   selectedMessages?: Message[];
   onMessageClick?: (message: Message, e?: React.MouseEvent | React.TouchEvent) => void;
-  onMessageDoubleClick?: (message: Message, e?: React.MouseEvent | React.TouchEvent) => void; // ✅ جديد
 }
 // The core component logic
 const MessageListComponent: React.FC<MessageListProps> = ({
@@ -21,7 +20,6 @@ const MessageListComponent: React.FC<MessageListProps> = ({
   onMessageLongPress,
   selectedMessages = [],
   onMessageClick,
-  onMessageDoubleClick, // ✅ جديد
 }) => {
   const { user } = useAuth();
 
@@ -97,24 +95,13 @@ const MessageListComponent: React.FC<MessageListProps> = ({
                 onMessageClick(message, e);
               }
             }}
-            onDoubleClick={(
-              message: Message,
-              e?: React.MouseEvent | React.TouchEvent
-            ) => {
-              if (e) {
-                e.stopPropagation();
-              }
-              if (onMessageDoubleClick) {
-                onMessageDoubleClick(message, e);
-              }
-            }} // ✅ جديد
             senderAvatar={msgData.sender?.avatar_url}
             senderUsername={msgData.sender?.username}
           />
         </div>
       );
     },
-    [user?.id, onMessageLongPress, selectedMessages, onMessageClick, onMessageDoubleClick] // ✅ تحديث
+    [user?.id, onMessageLongPress, selectedMessages, onMessageClick]
   );
   if (loading && messages.length === 0) {
     return (
@@ -179,10 +166,6 @@ const areEqual = (
   // ✅ إصلاح: فحص onMessageClick - مهم لأنه يعتمد على isSelectionMode
   // بدون هذا، الرسائل لا تتجاوب مع النقر القصير بعد تأشير الرسالة الأولى
   if (prevProps.onMessageClick !== nextProps.onMessageClick) {
-    return false;
-  }
-  // ✅ جديد: فحص onMessageDoubleClick
-  if (prevProps.onMessageDoubleClick !== nextProps.onMessageDoubleClick) {
     return false;
   }
   // If all checks pass, props are considered equal, prevent re-render

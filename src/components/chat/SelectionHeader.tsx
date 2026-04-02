@@ -8,6 +8,7 @@ interface SelectionHeaderProps {
     onCopy: () => void;
     onForward: () => void;
     onSelectAll?: () => void;
+    isCopyDisabled?: boolean; // ✅ جديد: لتعطيل النسخ في حالات معينة
 }
 
 export function SelectionHeader({
@@ -16,7 +17,8 @@ export function SelectionHeader({
     onDelete,
     onCopy,
     onForward,
-    onSelectAll
+    onSelectAll,
+    isCopyDisabled = false // القيمة الافتراضية
 }: SelectionHeaderProps) {
     if (count === 0) return null;
 
@@ -50,11 +52,16 @@ export function SelectionHeader({
                 <div className="flex items-center gap-1 sm:gap-2">
                     <button 
                         onClick={onCopy}
-                        className="flex flex-col items-center p-2 hover:bg-green-50 dark:hover:bg-green-950/30 rounded-xl transition-all group"
-                        title="نسخ"
+                        disabled={isCopyDisabled}
+                        className={`flex flex-col items-center p-2 rounded-xl transition-all group ${
+                            isCopyDisabled 
+                            ? 'opacity-30 grayscale cursor-not-allowed' 
+                            : 'hover:bg-green-50 dark:hover:bg-green-950/30'
+                        }`}
+                        title={isCopyDisabled ? "لا يمكن نسخ هذا العنصر" : "نسخ"}
                     >
-                        <Copy size={20} className="text-green-600 dark:text-green-400 group-active:scale-95" />
-                        <span className="text-[10px] mt-1 font-medium text-green-700 dark:text-green-300 hidden sm:block">نسخ</span>
+                        <Copy size={20} className={`${isCopyDisabled ? 'text-slate-400' : 'text-green-600 dark:text-green-400'} group-active:scale-95`} />
+                        <span className={`text-[10px] mt-1 font-medium hidden sm:block ${isCopyDisabled ? 'text-slate-400' : 'text-green-700 dark:text-green-300'}`}>نسخ</span>
                     </button>
 
                     <button 

@@ -273,7 +273,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ conversationId, onSendAle
     handleSendLocation,
     handleMessageClick,
     handleMessageLongPress,
-    handleMessageDoubleClick, // ✅ جديد
     handleContainerClick,
     handleForwardMessages,
     handlePinMessage,
@@ -311,7 +310,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ conversationId, onSendAle
 
   // ✅ جلب البيانات الإضافية (تفاعلات وعدادات) من الجداول المنفصلة
   const displayedMessageIds = React.useMemo(() => displayedMessages.map(m => m.id), [displayedMessages]);
-  const chatExtras = useChatExtras(displayedMessageIds);
+  const chatExtras = useChatExtras(displayedMessageIds, conversationId);
 
   // دمج البيانات الإضافية في الرسائل المعروضة
   const enrichedMessages = React.useMemo(() => {
@@ -421,10 +420,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ conversationId, onSendAle
           count={selectedMessages.length}
           onClear={clearSelection}
           onDelete={() => triggerAction('deleteForAll')}
+          isCopyDisabled={selectedMessages.length !== 1 || selectedMessages[0]?.message_type !== 'text'}
           onCopy={() => {
-            const textToCopy = selectedMessages.map(m => m.text).join('\n---\n');
+            const textToCopy = selectedMessages[0]?.text || '';
             navigator.clipboard.writeText(textToCopy);
-            toast.success('تم نسخ الرسائل');
+            toast.success('تم نسخ النص');
             clearSelection();
           }}
           onForward={() => triggerAction('forward')}
@@ -474,7 +474,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ conversationId, onSendAle
               onMessageLongPress={handleMessageLongPress}
               selectedMessages={selectedMessages}
               onMessageClick={handleMessageClick}
-              onMessageDoubleClick={handleMessageDoubleClick} // ✅ جديد
             />
             {shouldReserveBottom() && (
               <div style={{ height: Math.max(formHeight + 8, 56) }} />

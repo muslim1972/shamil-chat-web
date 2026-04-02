@@ -38,19 +38,6 @@ export function useMessageHandlers({
     }
   }, [isSelectionMode, toggleSelectedItem, setSelectionMode]);
 
-  // ✅ جديد: معالج النقر المزدوج لإضافة تفاعل ❤️ بشكل سريع
-  const handleMessageDoubleClick = useCallback(async (message: Message, e?: React.MouseEvent | React.TouchEvent) => {
-    if (e) e.stopPropagation();
-
-    // إذا كان في وضع التأشير، نتجاهل النقر المزدوج
-    if (isSelectionMode) return;
-
-    // إضافة تفاعل ❤️ بشكل سريع
-    if (toggleReaction && userId) {
-      await toggleReaction(message.id, userId, '❤️');
-    }
-  }, [isSelectionMode, toggleReaction, userId]);
-
   const handleContainerClick = useCallback((e: React.MouseEvent | React.TouchEvent) => {
     // ✅ إصلاح المشكلة 3: إلغاء التأشير بالنقر في أي مكان فارغ
     if (!isSelectionMode) return;
@@ -70,7 +57,6 @@ export function useMessageHandlers({
   return {
     handleMessageClick,
     handleMessageLongPress,
-    handleMessageDoubleClick, // ✅ جديد
     handleContainerClick,
   };
 }

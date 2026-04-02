@@ -91,7 +91,7 @@ export function useChatActions({
     const { handleSendLocation } = useLocation({ sendMessage: sendText });
 
     // Message Handlers (click, long press, double click, container click)
-    const { handleMessageClick, handleMessageLongPress, handleMessageDoubleClick, handleContainerClick } = useMessageHandlers({
+    const { handleMessageClick, handleMessageLongPress, handleContainerClick } = useMessageHandlers({
         isSelectionMode,
         toggleSelectedItem,
         setSelectionMode,
@@ -160,7 +160,6 @@ export function useChatActions({
         // Handlers
         handleMessageClick,
         handleMessageLongPress,
-        handleMessageDoubleClick, // ✅ جديد
         handleContainerClick,
 
         // Actions
