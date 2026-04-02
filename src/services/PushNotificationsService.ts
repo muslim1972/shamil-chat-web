@@ -6,6 +6,12 @@ import { summarizeForNotification } from '../utils/messagePreview';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 import app from '../firebaseConfig';
 
+// 🛑 رسالة تشخيصية للتأكد من تحميل الملف
+if (typeof window !== 'undefined') {
+  console.log('PushNotificationsService.ts is being loaded...');
+  alert('PushNotificationsService Script Loaded'); 
+}
+
 // دعم Web Push Protocol API
 const publicVapidKey = import.meta.env.VITE_PUBLIC_VAPID_KEY;
 
