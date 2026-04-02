@@ -283,26 +283,34 @@ export class PushNotificationsService {
    */
   private async initializeWebPushNotifications(): Promise<void> {
     try {
-      alert('Entering initializeWebPushNotifications()...');
+      alert('DEBUG: Entering initializeWebPushNotifications()');
       
       const origin = typeof location !== 'undefined' ? location.origin : '';
+      alert('DEBUG: Origin = ' + origin);
+      
       const originIsCapLocalhost = origin === 'https://localhost';
-
       if (originIsCapLocalhost) {
-        if (import.meta.env.DEV) console.log('Skipping web push init on Capacitor WebView');
+        alert('DEBUG: Exiting because originIsCapLocalhost');
         return;
       }
 
-      if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-        console.warn('Push notifications are not supported in this browser');
+      if (!('serviceWorker' in navigator)) {
+        alert('DEBUG: Exiting because serviceWorker NOT in navigator');
+        return;
+      }
+      
+      if (!('PushManager' in window)) {
+        alert('DEBUG: Exiting because PushManager NOT in window');
         return;
       }
 
       try {
+        alert('DEBUG: Checking VAPID key...');
         if (!publicVapidKey) {
-          console.error('VAPID public key is not defined. Cannot subscribe to push notifications.');
+          alert('🚨 DEBUG: VAPID public key IS MISSING! Exiting...');
           return;
         }
+        alert('DEBUG: VAPID key is OK. Moving to Step 1...');
 
         // 1. تسجيل ملف firebase-messaging-sw.js المخصص
         alert('Step 1: Registering Service Worker...');
