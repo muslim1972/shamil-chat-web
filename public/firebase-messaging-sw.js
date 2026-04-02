@@ -3,7 +3,7 @@ importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js')
 importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js');
 
 firebase.initializeApp({
-    apiKey: "AIzaSyAkEErL1RV04Uza1cH553Lcp1drrIOaznQ",
+    apiKey: "AIzaSyDui47pK5gX-HxD0DiatzbAXZuOFYkSI50",
     authDomain: "shamilapp-d61f0.firebaseapp.com",
     projectId: "shamilapp-d61f0",
     storageBucket: "shamilapp-d61f0.firebasestorage.app",
