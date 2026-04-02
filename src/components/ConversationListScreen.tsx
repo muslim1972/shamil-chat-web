@@ -11,7 +11,7 @@ import useLongPress from '../hooks/useLongPress';
 import type { Conversation } from '../types';
 import { formatDistanceToNow } from 'date-fns';
 import { ar } from 'date-fns/locale';
-import { Archive, QrCode, X, LayoutGrid, PenTool, Bell, LogOut, Palette } from 'lucide-react';
+import { Archive, QrCode, X, LayoutGrid, PenTool, Bell, LogOut, Palette, Trash2 } from 'lucide-react';
 import SearchDialog from './SearchDialog';
 import { QRScannerDialog } from './QRScannerDialog';
 import { processQRImage } from '../utils/qrScannerUtils';
@@ -427,8 +427,6 @@ const ConversationListScreen: React.FC = () => {
     }
   }, [lastTriggeredAction, handleDeleteConversations, handleArchiveConversations, handleDeleteConversationsForAll, clearLastTriggeredAction]);
 
-
-
   // فتح صورة QR من الاستوديو
   const handleGenerateQR = useCallback(() => {
     // إنشاء input لاختيار الصورة
@@ -467,9 +465,6 @@ const ConversationListScreen: React.FC = () => {
     }
   }, [user, loading, navigate]);
 
-
-
-
   if (loading) {
     return <div className="flex items-center justify-center h-screen" style={{ background: 'var(--app-background)', color: 'var(--shagram-text)' }}>جاري التحميل...</div>;
   }
@@ -494,67 +489,95 @@ const ConversationListScreen: React.FC = () => {
             </div>
           </div>
         )}
-        <header className="sticky top-0 z-50 backdrop-blur-lg p-4 shadow-sm border-b pt-[calc(1rem+env(safe-area-inset-top))]" style={{ background: 'var(--header-bg)', borderColor: 'var(--primary-light)' }}>
-          <div className="flex justify-between items-center gap-2">
-            {/* أفاتار واسم المستخدم */}
-            <div className="flex items-center gap-2 min-w-0 flex-shrink">
-              <div className="relative inline-flex items-center justify-center w-8 h-8 overflow-hidden rounded-full flex-shrink-0" style={{ background: 'var(--primary-light)' }}>
-                {userAvatar ? (
-                  <img
-                    src={userAvatar}
-                    alt={(user as any)?.user_metadata?.username || 'المستخدم'}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <span className="font-medium text-slate-600 dark:text-slate-300 uppercase text-sm">
-                    {((user as any)?.user_metadata?.username || '#').charAt(0)}
-                  </span>
-                )}
-              </div>
-              <span className="text-sm sm:text-base font-semibold truncate max-w-[100px] sm:max-w-[150px]" style={{ color: 'var(--shagram-text)' }}>
-                {(user as any)?.user_metadata?.username || 'المستخدم'}
-              </span>
+
+        {isConversationsSelectionMode ? (
+          <header className="sticky top-0 z-50 p-4 shadow-lg border-b flex justify-between items-center bg-indigo-600 text-white pt-[calc(1rem+env(safe-area-inset-top))] transition-all duration-300">
+            <div className="flex items-center gap-4">
+              <button onClick={clearSelection} className="p-2 hover:bg-indigo-700/50 rounded-full transition-colors" aria-label="إلغاء التحديد">
+                <X size={24} />
+              </button>
+              <h2 className="text-lg font-bold">محادثة واحدة مختارة</h2>
             </div>
-            {/* الأزرار */}
-            <div className="flex items-center space-x-2 rtl:space-x-reverse flex-shrink-0" style={{ color: 'var(--shagram-text-muted)' }}>
-              <button onClick={() => navigate('/settings/typing')} aria-label="تخصيص مؤشر الكتابة" className="hover:text-[var(--primary)]"><PenTool size={20} /></button>
-              <button onClick={() => navigate('/settings/theme')} aria-label="إعدادات المظهر" className="hover:text-[var(--primary)]"><Palette size={20} /></button>
-              <button onClick={() => navigate('/archived')} aria-label="المحادثات المؤرشفة" className="hover:text-[var(--primary)]"><Archive size={20} /></button>
-              <button onClick={() => navigate('/notifications')} aria-label="التنبيهات" className="hover:text-[var(--primary)]"><Bell size={20} /></button>
-              <button onClick={() => navigate('/dashboard')} aria-label="الواجهة الرئيسية" className="hover:text-[var(--primary)]"><LayoutGrid size={20} /></button>
+            <div className="flex items-center gap-2">
               <button 
-                onClick={async () => {
-                  if (window.confirm('هل أنت متأكد من تسجيل الخروج؟')) {
-                    await signOut();
-                    navigate('/auth');
-                  }
-                }} 
-                aria-label="تسجيل الخروج" 
-                className="hover:text-red-500 transition-colors"
-                style={{ color: 'var(--shagram-text-muted)' }}
+                onClick={handleArchiveConversations} 
+                className="p-2 hover:bg-indigo-700/50 rounded-full transition-colors"
+                title="أرشفة"
               >
-                <LogOut size={20} />
+                <Archive size={24} />
+              </button>
+              <button 
+                onClick={handleDeleteConversations} 
+                className="p-2 hover:bg-indigo-700/50 rounded-full transition-colors"
+                title="حذف لدي"
+              >
+                <Trash2 size={24} />
               </button>
             </div>
-          </div>
-          <div className="mt-4 flex justify-between items-center">
-            <div className="relative flex-1">
-              <SearchDialog
-                onOpenConversation={handleCreateConversation}
-                onGenerateQR={handleGenerateQR}
-                onOpenCamera={handleOpenCamera}
-              />
+          </header>
+        ) : (
+          <header className="sticky top-0 z-50 backdrop-blur-lg p-4 shadow-sm border-b pt-[calc(1rem+env(safe-area-inset-top))]" style={{ background: 'var(--header-bg)', borderColor: 'var(--primary-light)' }}>
+            <div className="flex justify-between items-center gap-2">
+              {/* أفاتار واسم المستخدم */}
+              <div className="flex items-center gap-2 min-w-0 flex-shrink">
+                <div className="relative inline-flex items-center justify-center w-8 h-8 overflow-hidden rounded-full flex-shrink-0" style={{ background: 'var(--primary-light)' }}>
+                  {userAvatar ? (
+                    <img
+                      src={userAvatar}
+                      alt={(user as any)?.user_metadata?.username || 'المستخدم'}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="font-medium text-slate-600 dark:text-slate-300 uppercase text-sm">
+                      {((user as any)?.user_metadata?.username || '#').charAt(0)}
+                    </span>
+                  )}
+                </div>
+                <span className="text-sm sm:text-base font-semibold truncate max-w-[100px] sm:max-w-[150px]" style={{ color: 'var(--shagram-text)' }}>
+                  {(user as any)?.user_metadata?.username || 'المستخدم'}
+                </span>
+              </div>
+              {/* الأزرار */}
+              <div className="flex items-center space-x-2 rtl:space-x-reverse flex-shrink-0" style={{ color: 'var(--shagram-text-muted)' }}>
+                <button onClick={() => navigate('/settings/typing')} aria-label="تخصيص مؤشر الكتابة" className="hover:text-[var(--primary)]"><PenTool size={20} /></button>
+                <button onClick={() => navigate('/settings/theme')} aria-label="إعدادات المظهر" className="hover:text-[var(--primary)]"><Palette size={20} /></button>
+                <button onClick={() => navigate('/archived')} aria-label="المحادثات المؤرشفة" className="hover:text-[var(--primary)]"><Archive size={20} /></button>
+                <button onClick={() => navigate('/notifications')} aria-label="التنبيهات" className="hover:text-[var(--primary)]"><Bell size={20} /></button>
+                <button onClick={() => navigate('/dashboard')} aria-label="الواجهة الرئيسية" className="hover:text-[var(--primary)]"><LayoutGrid size={20} /></button>
+                <button 
+                  onClick={async () => {
+                    if (window.confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+                      await signOut();
+                      navigate('/auth');
+                    }
+                  }} 
+                  aria-label="تسجيل الخروج" 
+                  className="hover:text-red-500 transition-colors"
+                  style={{ color: 'var(--shagram-text-muted)' }}
+                >
+                  <LogOut size={20} />
+                </button>
+              </div>
             </div>
-            {/* زر QR - يفتح المعرض مباشرة */}
-            <button
-              className="ml-2 p-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition-colors"
-              onClick={() => setShowQRScanner(true)}
-              title="مسح رمز QR"
-            >
-              <QrCode size={20} />
-            </button>
-          </div>
-        </header>
+            <div className="mt-4 flex justify-between items-center">
+              <div className="relative flex-1">
+                <SearchDialog
+                  onOpenConversation={handleCreateConversation}
+                  onGenerateQR={handleGenerateQR}
+                  onOpenCamera={handleOpenCamera}
+                />
+              </div>
+              {/* زر QR - يفتح المعرض مباشرة */}
+              <button
+                className="ml-2 p-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition-colors"
+                onClick={() => setShowQRScanner(true)}
+                title="مسح رمز QR"
+              >
+                <QrCode size={20} />
+              </button>
+            </div>
+          </header>
+        )}
         <div className="flex-1 overflow-y-auto">
           <ul>
             {sortedConversations.map((conversation) => (

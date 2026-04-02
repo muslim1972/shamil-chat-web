@@ -288,20 +288,47 @@ const ArchivedConversationsScreen: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen" style={{ background: 'var(--app-background)' }}>
-      <div className="text-white p-4 shadow-md border-b" style={{ background: 'var(--header-bg)', borderColor: 'var(--shagram-border)', color: 'var(--shagram-text)' }}>
-        <div className="flex justify-between items-center">
-          <div className="flex items-center">
-            <button
-              onClick={handleBack}
-              className="mr-2 p-2 rounded-full hover:bg-indigo-500 dark:hover:bg-slate-700 transition-colors"
-              aria-label="العودة"
-            >
-              <ArrowRight className="h-6 w-6" />
+      {isArchivedSelectionMode ? (
+        <header className="sticky top-0 z-50 p-4 shadow-lg border-b flex justify-between items-center bg-indigo-600 text-white pt-[calc(1rem+env(safe-area-inset-top))] transition-all duration-300">
+          <div className="flex items-center gap-4">
+            <button onClick={clearSelection} className="p-2 hover:bg-indigo-700/50 rounded-full transition-colors" aria-label="إلغاء التحديد">
+              <X size={24} />
             </button>
-            <h1 className="text-xl font-bold">المحادثات المؤرشفة</h1>
+            <h2 className="text-lg font-bold">محادثة واحدة مختارة</h2>
+          </div>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={handleUnarchiveSelected} 
+              className="p-2 hover:bg-indigo-700/50 rounded-full transition-colors"
+              title="إلغاء الأرشفة"
+            >
+              <Archive size={24} />
+            </button>
+            <button 
+              onClick={handleDeleteSelectedForMe} 
+              className="p-2 hover:bg-indigo-700/50 rounded-full transition-colors"
+              title="حذف لدي"
+            >
+              <Trash2 size={24} />
+            </button>
+          </div>
+        </header>
+      ) : (
+        <div className="text-white p-4 shadow-md border-b" style={{ background: 'var(--header-bg)', borderColor: 'var(--shagram-border)', color: 'var(--shagram-text)' }}>
+          <div className="flex justify-between items-center">
+            <div className="flex items-center">
+              <button
+                onClick={handleBack}
+                className="mr-2 p-2 rounded-full hover:bg-indigo-500 dark:hover:bg-slate-700 transition-colors"
+                aria-label="العودة"
+              >
+                <ArrowRight className="h-6 w-6" />
+              </button>
+              <h1 className="text-xl font-bold">المحادثات المؤرشفة</h1>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <div className="flex-1 overflow-y-auto">
         {archivedConversations.length === 0 ? (

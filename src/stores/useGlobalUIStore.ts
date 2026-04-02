@@ -45,8 +45,18 @@ export const useGlobalUIStore = create<GlobalUIState>((set, get) => ({
         set({ selectedItems: newSelectedItems });
       }
     } else {
-      if (selectionMode === 'none' || (selectionMode === 'messages' && type === 'conversation') || (selectionMode === 'conversations' && type === 'message') || (selectionMode === 'comments' && type !== 'comment')) {
-        set({ selectedItems: [item], selectionMode: type === 'message' ? 'messages' : type === 'conversation' ? 'conversations' : 'comments' });
+      // ✨ Shamli: For conversations, always enforce single selection
+      if (type === 'conversation') {
+        set({ selectedItems: [item], selectionMode: 'conversations' });
+        return;
+      }
+
+      // Logic for messages and comments
+      // If mode doesn't match current type, start new selection
+      const targetMode = type === 'message' ? 'messages' : type === 'comment' ? 'comments' : 'none';
+      
+      if (selectionMode !== targetMode) {
+        set({ selectedItems: [item], selectionMode: targetMode as any });
       } else {
         set({ selectedItems: [...selectedItems, item] });
       }
