@@ -20,6 +20,11 @@ self.addEventListener('activate', (event) => {
     event.waitUntil(clients.claim());
 });
 
+// ضروري جداً لكي يعتبر المتصفح الـ Service Worker متوافقاً مع PWA
+self.addEventListener('fetch', (event) => {
+    // يمكن تركها فارغة مؤقتاً، ولكن وجودها ضروري للتثبيت الاستقرائي
+});
+
 const messaging = firebase.messaging();
 
 // التعامل مع الرسائل في الخلفية
