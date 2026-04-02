@@ -11,6 +11,15 @@ firebase.initializeApp({
     appId: "1:532939856893:web:82091d6e557a54a7389794"
 });
 
+// ضمان التفعيل الفوري
+self.addEventListener('install', () => {
+    self.skipWaiting();
+});
+
+self.addEventListener('activate', (event) => {
+    event.waitUntil(clients.claim());
+});
+
 const messaging = firebase.messaging();
 
 // التعامل مع الرسائل في الخلفية

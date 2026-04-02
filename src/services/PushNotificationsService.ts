@@ -303,38 +303,44 @@ export class PushNotificationsService {
 
         // 1. تسجيل ملف firebase-messaging-sw.js المخصص
         console.log('Registering Service Worker...');
-        const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-        console.log('Service Worker registered successfully');
+        await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+        
+        // الانتظار حتى يصبح الجاهز
+        const registration = await navigator.serviceWorker.ready;
+        console.log('Service Worker is ready');
 
         // 2. طلب الإذن
         const permission = await Notification.requestPermission();
         console.log('Permission status:', permission);
 
         if (permission !== 'granted') {
-          alert('⚠️ لقد قمت برفض إذن الإشعارات في المتصفح. يرجى تفعيله من إعدادات الموقع.');
+          alert('⚠️ إذن الإشعارات مطلوب لتلقي التنبيهات. يرجى تفعيله.');
           return;
         }
 
-        // الحصول على رمز FCM للويب باستخدام Firebase Messaging SDK
+        // الحصول على رمز FCM للويب
         const messaging = getMessaging(app);
         
         try {
-          console.log('Getting FCM Token from Firebase...');
+          console.log('Requesting FCM Token...');
+          // تنبيه بسيط لنعرف أننا وصلنا هنا
+          // alert('جاري استخراج رمز الإشعارات...'); 
+
           const fcmToken = await getToken(messaging, {
             vapidKey: publicVapidKey,
             serviceWorkerRegistration: registration
           });
 
           if (fcmToken) {
-            console.log('🚀 FCM Token generated:', fcmToken);
+            console.log('🚀 Web FCM Token:', fcmToken);
             await this.saveTokenToDatabaseForWeb(fcmToken);
-            alert('✅ تم تفعيل إشعارات الويب بنجاح على هذا الجهاز!');
+            alert('✅ مبروك! تم ربط جهازك بنظام الإشعارات بنجاح.');
           } else {
-            alert('❌ فشل الحصول على رمز الإشعارات (FCM Token is null)');
+            alert('❌ حصلنا على استجابة فارغة (No Token)');
           }
         } catch (tokenError) {
-          console.error('Error getting FCM token:', tokenError);
-          alert('🚨 خطأ في الحصول على الرمز: ' + (tokenError as any).message);
+          console.error('FCM Token Error:', tokenError);
+          alert('🚨 فشل Firebase: ' + (tokenError as any).message);
         }
       } catch (error) {
         console.error('Error initializing web push notifications:', error);
