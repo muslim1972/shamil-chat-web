@@ -308,16 +308,18 @@ export class PushNotificationsService {
         }
 
         // 1. تسجيل ملف firebase-messaging-sw.js المخصص
-        console.log('Registering Service Worker...');
+        alert('Step 1: Registering Service Worker...');
         await navigator.serviceWorker.register('/firebase-messaging-sw.js');
         
         // الانتظار حتى يصبح الجاهز
+        alert('Step 2: Waiting for Service Worker to be ready...');
         const registration = await navigator.serviceWorker.ready;
-        console.log('Service Worker is ready');
+        alert('Step 3: Service Worker is ready!');
 
         // 2. طلب الإذن
+        alert('Step 4: Requesting Permission...');
         const permission = await Notification.requestPermission();
-        console.log('Permission status:', permission);
+        alert('Step 5: Permission status is ' + permission);
 
         if (permission !== 'granted') {
           alert('⚠️ إذن الإشعارات مطلوب لتلقي التنبيهات. يرجى تفعيله.');
@@ -328,25 +330,21 @@ export class PushNotificationsService {
         const messaging = getMessaging(app);
         
         try {
-          console.log('Requesting FCM Token...');
-          // تنبيه بسيط لنعرف أننا وصلنا هنا
-          // alert('جاري استخراج رمز الإشعارات...'); 
-
+          alert('Step 6: Requesting FCM Token from Firebase...');
           const fcmToken = await getToken(messaging, {
             vapidKey: publicVapidKey,
             serviceWorkerRegistration: registration
           });
 
           if (fcmToken) {
-            console.log('🚀 Web FCM Token:', fcmToken);
+            alert('Step 7: FCM Token received! Saving to DB...');
             await this.saveTokenToDatabaseForWeb(fcmToken);
             alert('✅ مبروك! تم ربط جهازك بنظام الإشعارات بنجاح.');
           } else {
             alert('❌ حصلنا على استجابة فارغة (No Token)');
           }
         } catch (tokenError) {
-          console.error('FCM Token Error:', tokenError);
-          alert('🚨 فشل Firebase: ' + (tokenError as any).message);
+          alert('🚨 فشل Firebase في الخطوة 6: ' + (tokenError as any).message);
         }
       } catch (error) {
         console.error('Error initializing web push notifications:', error);
