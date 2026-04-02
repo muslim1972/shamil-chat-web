@@ -36,6 +36,11 @@ function dataURLtoFile(dataUrl: string, filename: string): File {
  * مع الاحتفاظ بـ Orientation فقط للعرض الصحيح
  */
 export async function stripExif(file: File): Promise<File> {
+    // ✅ piexifjs تدعم فقط JPEG - تخطي الأنواع الأخرى مثل PNG
+    if (file.type !== 'image/jpeg' && !file.name.toLowerCase().endsWith('.jpg') && !file.name.toLowerCase().endsWith('.jpeg')) {
+        return file;
+    }
+
     try {
         const dataUrl = await fileToDataURL(file);
 

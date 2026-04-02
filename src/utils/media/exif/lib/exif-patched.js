@@ -1046,9 +1046,7 @@ const EXIF = (function() {
         return findEXIFinJPEG(file);
     }
 
-    if (typeof define === 'function' && define.amd) {
-        return EXIF;
-    }
+    return EXIF;
 })();
 export default EXIF;
 

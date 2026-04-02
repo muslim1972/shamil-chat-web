@@ -15,10 +15,6 @@ export interface ExifMetadata {
     hasGPS: boolean; // تحذير أمني
 }
 
-/**
- * قراءة بيانات EXIF من ملف صورة
- * ✅ مع timeout و معالجة كاملة للأخطاء
- */
 export async function readExif(file: File): Promise<ExifMetadata> {
     const defaultResult: ExifMetadata = {
         width: 0,
@@ -26,6 +22,11 @@ export async function readExif(file: File): Promise<ExifMetadata> {
         orientation: 1,
         hasGPS: false
     };
+
+    // ✅ التأكد من أن الملف JPEG قبل المحاولة (تجنب الـ timeout في الأنواع الأخرى)
+    if (file.type !== 'image/jpeg' && !file.name.toLowerCase().endsWith('.jpg') && !file.name.toLowerCase().endsWith('.jpeg')) {
+        return defaultResult;
+    }
 
     // ✅ Promise مع timeout (3 ثواني كحد أقصى)
     const exifPromise = new Promise<ExifMetadata>((resolve) => {
