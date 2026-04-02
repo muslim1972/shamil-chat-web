@@ -44,45 +44,43 @@ export class PushNotificationsService {
     }
 
     try {
-      if (import.meta.env.DEV) console.log('Initializing PushNotificationsService...');
+      alert('Inside initialize()... checking platform');
 
-      // التحقق من بيئة التشغيل
-      const originIsCapLocalhost = typeof location !== 'undefined' && location.origin === 'https://localhost';
-      const platform = Capacitor?.getPlatform ? Capacitor.getPlatform() : 'web';
-      const isNativeLike = originIsCapLocalhost || (platform && platform !== 'web');
+      let platform = 'web';
+      try {
+        platform = Capacitor.getPlatform();
+      } catch (e) {
+        console.warn('Capacitor not available, defaulting to web');
+      }
+      
+      alert('Platform detected: ' + platform);
+
+      const origin = typeof location !== 'undefined' ? location.origin : '';
+      const isNativeLike = (platform !== 'web') || (origin === 'https://localhost');
 
       if (!isNativeLike) {
-        if (import.meta.env.DEV) console.log('Initializing web push notifications...');
+        alert('Decided: WEB PATH. Calling initializeWebPushNotifications()...');
         await this.initializeWebPushNotifications();
         this.isInitialized = true;
         return;
       }
 
+      alert('Decided: NATIVE PATH.');
+      
       // التحقق من توفر مكتبة الإشعارات
       if (!PushNotifications || typeof PushNotifications.addListener !== 'function') {
         console.warn('PushNotifications plugin is not available');
-        this.isInitialized = true; // تعيين كـ مهيأ لتجنب المحاولات المستقبلية
+        this.isInitialized = true;
         return;
       }
 
-      // تسجيل مستمعي الأحداث للإشعارات
-      try {
-        await this.registerListeners();
-      } catch (listenerError) {
-        console.error('Failed to register push notification listeners:', listenerError);
-      }
-
-      // طلب الأذونات والتسجيل في خدمة الإشعارات
-      try {
-        await this.requestPermissionsAndRegister();
-      } catch (permissionError) {
-        console.error('Failed to request permissions or register device:', permissionError);
-      }
+      await this.registerListeners();
+      await this.requestPermissionsAndRegister();
 
       this.isInitialized = true;
-      if (import.meta.env.DEV) console.log('PushNotificationsService initialized successfully');
     } catch (error) {
       console.error('Failed to initialize PushNotificationsService:', error);
+      alert('🚨 Main initialize error: ' + (error as any).message);
     }
   }
 
