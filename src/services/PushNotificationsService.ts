@@ -283,12 +283,11 @@ export class PushNotificationsService {
    */
   private async initializeWebPushNotifications(): Promise<void> {
     try {
-      // تفعيل دائم لإشعارات الويب في الـ PWA
-      if (typeof location !== 'undefined') {
-          console.log('Initializing web push on:', location.hostname);
-      }
+      alert('Entering initializeWebPushNotifications()...');
+      
+      const origin = typeof location !== 'undefined' ? location.origin : '';
+      const originIsCapLocalhost = origin === 'https://localhost';
 
-      const originIsCapLocalhost = typeof location !== 'undefined' && location.origin === 'https://localhost';
       if (originIsCapLocalhost) {
         if (import.meta.env.DEV) console.log('Skipping web push init on Capacitor WebView');
         return;
