@@ -3,7 +3,9 @@ import { useAuth } from '../context/AuthContext';
 import { auth } from '../firebaseConfig';
 import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 import type { ConfirmationResult } from 'firebase/auth';
-import { Phone, Check, RefreshCw } from 'lucide-react';
+import { Phone, Check, RefreshCw, Save } from 'lucide-react';
+import { UserService } from '../services/UserService';
+import toast from 'react-hot-toast';
 
 // معرف فريد لكل instance لتجنب التعارض
 let recaptchaInstanceId = 0;
@@ -37,7 +39,8 @@ const LinkPhoneNumber: React.FC = () => {
             const result = await checkPhoneNumberExists(user.id);
             if (result.exists && result.phoneNumber) {
                 setCurrentPhone(result.phoneNumber);
-                setStep('linked');
+                setPhoneNumber(result.phoneNumber);
+                // لا نغير الـ step هنا لنبقى في واجهة الإدخال الموحدة
             }
         } catch (err) {
             console.error('Error loading phone:', err);
@@ -196,10 +199,11 @@ const LinkPhoneNumber: React.FC = () => {
             if (user) {
                 await linkPhoneNumber(phoneNumber, user.id);
                 setCurrentPhone(phoneNumber);
-                setStep('linked');
-                setPhoneNumber('');
+                // نبقى في نفس الواجهة
                 setOtp('');
+                setStep('input');
                 cleanupRecaptcha();
+                toast.success('تم ربط رقم الهاتف بنجاح');
             }
         } catch (err: any) {
             console.error('❌ Verify OTP Error:', err);
@@ -215,19 +219,36 @@ const LinkPhoneNumber: React.FC = () => {
         }
     };
 
-    const handleEdit = () => {
-        setStep('input');
-        setPhoneNumber(currentPhone || '');
-        setOtp('');
+    const handleSavePhoneNumber = async () => {
+        if (!phoneNumber || phoneNumber.length < 10) {
+            setError('يرجى إدخال رقم هاتف صحيح');
+            return;
+        }
+
+        if (!user) return;
+
+        setLoading(true);
         setError(null);
-        setConfirmationResult(null);
+
+        try {
+            const result = await UserService.updatePhoneNumber(user.id, phoneNumber);
+            if (result.success) {
+                setCurrentPhone(phoneNumber);
+                // نبقى في نفس الواجهة
+                toast.success('تم حفظ رقم الهاتف بنجاح');
+            } else {
+                setError(result.error || 'فشل حفظ الرقم');
+            }
+        } catch (err) {
+            console.error('Save Phone Error:', err);
+            setError('حدث خطأ أثناء الحفظ');
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleCancel = () => {
-        if (currentPhone) {
-            setStep('linked');
-        }
-        setPhoneNumber('');
+        setPhoneNumber(currentPhone || '');
         setOtp('');
         setError(null);
         cleanupRecaptcha();
@@ -241,8 +262,9 @@ const LinkPhoneNumber: React.FC = () => {
     };
 
     return (
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md">
-            <div className="flex items-center gap-3 mb-4">
+        <div className="bg-transparent p-6 pt-2">
+            {/* تم نقل العنوان والوصف إلى الحوار الخارجي */}
+            {/* <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900 rounded-full flex items-center justify-center">
                     <Phone className="text-indigo-600 dark:text-indigo-400" size={20} />
                 </div>
@@ -250,7 +272,7 @@ const LinkPhoneNumber: React.FC = () => {
                     <h3 className="font-semibold text-gray-900 dark:text-white">رقم الهاتف</h3>
                     <p className="text-xs text-gray-500 dark:text-gray-400">للأمان الإضافي (2FA) واستعادة الحساب</p>
                 </div>
-            </div>
+            </div> */}
 
             {/* Recaptcha Container - دائماً موجود في DOM */}
             <div
@@ -259,30 +281,22 @@ const LinkPhoneNumber: React.FC = () => {
                 style={{ position: 'absolute', left: '-9999px' }}
             />
 
-            {step === 'linked' && currentPhone && (
-                <div className="space-y-3">
-                    <div className="flex items-center justify-between bg-green-50 dark:bg-green-900/20 p-3 rounded-lg border border-green-200 dark:border-green-800">
-                        <div className="flex items-center gap-2">
-                            <Check className="text-green-600 dark:text-green-400" size={18} />
-                            <span className="text-sm font-mono text-green-700 dark:text-green-300" dir="ltr">{currentPhone}</span>
-                        </div>
-                        <span className="text-xs text-green-600 dark:text-green-400 font-medium">مُربوط</span>
-                    </div>
-                    <button
-                        onClick={handleEdit}
-                        className="w-full px-4 py-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition"
-                    >
-                        تغيير رقم الهاتف
-                    </button>
-                </div>
-            )}
+            {/* تم إلغاء شاشة 'linked' المنفصلة لتوحيد الواجهة */}
 
             {step === 'input' && (
                 <div className="space-y-4">
                     <div>
-                        <label htmlFor="phone-input" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            رقم الهاتف بالصيغة الدولية
-                        </label>
+                        <div className="flex justify-between items-center mb-2">
+                             <label htmlFor="phone-input" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                رقم الهاتف بالصيغة الدولية
+                            </label>
+                            {phoneNumber === currentPhone && currentPhone && (
+                                <div className="flex items-center gap-1 bg-green-100 dark:bg-green-900/30 px-2 py-0.5 rounded-full border border-green-200 dark:border-green-800/50">
+                                    <Check size={10} className="text-green-600 dark:text-green-400" strokeWidth={3} />
+                                    <span className="text-[10px] text-green-700 dark:text-green-400 font-bold uppercase">مُربوط</span>
+                                </div>
+                            )}
+                        </div>
                         <input
                             id="phone-input"
                             type="tel"
@@ -292,7 +306,7 @@ const LinkPhoneNumber: React.FC = () => {
                             onChange={(e) => setPhoneNumber(e.target.value)}
                             placeholder="+964xxxxxxxxx"
                         />
-                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">مثال: +9647XXXXXXXX</p>
+                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400"> ( مثال  +964-xxxxxxxxxx )</p>
                     </div>
 
                     {/* مؤشر حالة Recaptcha */}
@@ -315,21 +329,32 @@ const LinkPhoneNumber: React.FC = () => {
                         </div>
                     )}
 
-                    <div className="flex gap-2">
-                        {currentPhone && (
+                    <div className="space-y-2">
+                        <div className="flex gap-2">
+                            {currentPhone && (
+                                <button
+                                    onClick={handleCancel}
+                                    className="flex-1 px-4 py-3 text-sm font-bold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-all active:scale-95"
+                                >
+                                    إلغاء
+                                </button>
+                            )}
                             <button
-                                onClick={handleCancel}
-                                className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition"
+                                onClick={handleSendOTP}
+                                disabled={loading || !phoneNumber || !recaptchaReady}
+                                className="flex-[2] px-4 py-3 text-sm font-bold text-white bg-indigo-500 rounded-xl hover:bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 shadow-sm"
                             >
-                                إلغاء
+                                {loading ? 'جاري الإرسال...' : 'إرسال رمز التحقق'}
                             </button>
-                        )}
+                        </div>
+                        
                         <button
-                            onClick={handleSendOTP}
-                            disabled={loading || !phoneNumber || !recaptchaReady}
-                            className="flex-1 px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                            onClick={handleSavePhoneNumber}
+                            disabled={loading || !phoneNumber}
+                            className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold text-indigo-700 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-all active:scale-95"
                         >
-                            {loading ? 'جاري الإرسال...' : 'إرسال رمز التحقق'}
+                            <Save size={16} />
+                            {loading ? 'جاري الحفظ...' : 'حفظ رقم الهاتف بدون رمز'}
                         </button>
                     </div>
                 </div>

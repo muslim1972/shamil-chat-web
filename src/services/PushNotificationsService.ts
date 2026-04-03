@@ -6,10 +6,8 @@ import { summarizeForNotification } from '../utils/messagePreview';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 import app from '../firebaseConfig';
 
-// 🛑 رسالة تشخيصية للتأكد من تحميل الملف
 if (typeof window !== 'undefined') {
-  console.log('PushNotificationsService.ts is being loaded...');
-  alert('PushNotificationsService Script Loaded'); 
+  if (import.meta.env.DEV) console.log('PushNotificationsService.ts is being loaded...');
 }
 
 // دعم Web Push Protocol API
@@ -44,7 +42,7 @@ export class PushNotificationsService {
     }
 
     try {
-      alert('Inside initialize()... checking platform');
+      if (import.meta.env.DEV) console.log('PushNotificationsService: Initializing...');
 
       let platform = 'web';
       try {
@@ -53,19 +51,19 @@ export class PushNotificationsService {
         console.warn('Capacitor not available, defaulting to web');
       }
       
-      alert('Platform detected: ' + platform);
+      if (import.meta.env.DEV) console.log('Platform detected:', platform);
 
       const origin = typeof location !== 'undefined' ? location.origin : '';
       const isNativeLike = (platform !== 'web') || (origin === 'https://localhost');
 
       if (!isNativeLike) {
-        alert('Decided: WEB PATH. Calling initializeWebPushNotifications()...');
+        if (import.meta.env.DEV) console.log('PushNotificationsService: Web initialization path');
         await this.initializeWebPushNotifications();
         this.isInitialized = true;
         return;
       }
 
-      alert('Decided: NATIVE PATH.');
+      if (import.meta.env.DEV) console.log('PushNotificationsService: Native initialization path');
       
       // التحقق من توفر مكتبة الإشعارات
       if (!PushNotifications || typeof PushNotifications.addListener !== 'function') {
@@ -80,7 +78,9 @@ export class PushNotificationsService {
       this.isInitialized = true;
     } catch (error) {
       console.error('Failed to initialize PushNotificationsService:', error);
-      alert('🚨 Main initialize error: ' + (error as any).message);
+      if (import.meta.env.DEV) {
+        console.error('PushNotificationsService Error:', error);
+      }
     }
   }
 
@@ -283,51 +283,31 @@ export class PushNotificationsService {
    */
   private async initializeWebPushNotifications(): Promise<void> {
     try {
-      alert('DEBUG: Entering initializeWebPushNotifications()');
-      
       const origin = typeof location !== 'undefined' ? location.origin : '';
-      alert('DEBUG: Origin = ' + origin);
       
       const originIsCapLocalhost = origin === 'https://localhost';
-      if (originIsCapLocalhost) {
-        alert('DEBUG: Exiting because originIsCapLocalhost');
-        return;
-      }
+      if (originIsCapLocalhost) return;
 
-      if (!('serviceWorker' in navigator)) {
-        alert('DEBUG: Exiting because serviceWorker NOT in navigator');
-        return;
-      }
+      if (!('serviceWorker' in navigator)) return;
       
-      if (!('PushManager' in window)) {
-        alert('DEBUG: Exiting because PushManager NOT in window');
-        return;
-      }
+      if (!('PushManager' in window)) return;
 
       try {
-        alert('DEBUG: Checking VAPID key...');
         if (!publicVapidKey) {
-          alert('🚨 DEBUG: VAPID public key IS MISSING! Exiting...');
+          if (import.meta.env.DEV) console.warn('PushNotificationsService: VAPID public key is missing');
           return;
         }
-        alert('DEBUG: VAPID key is OK. Moving to Step 1...');
 
         // 1. تسجيل ملف firebase-messaging-sw.js المخصص
-        alert('Step 1: Registering Service Worker...');
         await navigator.serviceWorker.register('/firebase-messaging-sw.js');
         
         // الانتظار حتى يصبح الجاهز
-        alert('Step 2: Waiting for Service Worker to be ready...');
         const registration = await navigator.serviceWorker.ready;
-        alert('Step 3: Service Worker is ready!');
 
         // 2. طلب الإذن
-        alert('Step 4: Requesting Permission...');
         const permission = await Notification.requestPermission();
-        alert('Step 5: Permission status is ' + permission);
 
         if (permission !== 'granted') {
-          alert('⚠️ إذن الإشعارات مطلوب لتلقي التنبيهات. يرجى تفعيله.');
           return;
         }
 
@@ -335,21 +315,18 @@ export class PushNotificationsService {
         const messaging = getMessaging(app);
         
         try {
-          alert('Step 6: Requesting FCM Token from Firebase...');
           const fcmToken = await getToken(messaging, {
             vapidKey: publicVapidKey,
             serviceWorkerRegistration: registration
           });
 
           if (fcmToken) {
-            alert('Step 7: FCM Token received! Saving to DB...');
             await this.saveTokenToDatabaseForWeb(fcmToken);
-            alert('✅ مبروك! تم ربط جهازك بنظام الإشعارات بنجاح.');
           } else {
-            alert('❌ حصلنا على استجابة فارغة (No Token)');
+            console.warn('PushNotificationsService: Empty FCM response');
           }
         } catch (tokenError) {
-          alert('🚨 فشل Firebase في الخطوة 6: ' + (tokenError as any).message);
+           console.error('PushNotificationsService: Token error:', tokenError);
         }
       } catch (error) {
         console.error('Error initializing web push notifications:', error);

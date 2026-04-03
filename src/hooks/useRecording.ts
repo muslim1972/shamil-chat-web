@@ -2,6 +2,7 @@
 // This hook handles audio recording functionality
 
 import { useState, useRef, useCallback } from 'react';
+import toast from 'react-hot-toast';
 
 interface UseRecordingProps {
   sendAudioMessage: (audioBlob: Blob, duration: number, caption?: string) => Promise<void>;
@@ -69,9 +70,9 @@ export const useRecording = ({ sendAudioMessage }: UseRecordingProps) => {
     } catch (err: any) {
       console.error("Failed to start recording:", err);
       if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-        alert('عذراً، نحتاج إلى إذن الوصول إلى الميكروفون لتسجيل الصوت.');
+        toast.error('عذراً، نحتاج إلى إذن الوصول إلى الميكروفون لتسجيل الصوت.');
       } else {
-        alert('فشل بدء التسجيل. يرجى التحقق من توصيل الميكروفون أو أذونات المتصفح.');
+        toast.error('فشل بدء التسجيل. يرجى التحقق من توصيل الميكروفون أو أذونات المتصفح.');
       }
       setIsRecording(false);
     }

@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import type { Message } from '../types';
 
 export const useMessageSelection = (
@@ -40,9 +41,9 @@ export const useMessageSelection = (
 
     if (textToCopy) {
       await navigator.clipboard.writeText(textToCopy);
-      alert('تم نسخ الرسائل إلى الحافظة.');
+      toast.success('تم نسخ الرسائل إلى الحافظة.');
     } else {
-      alert('لا يمكن نسخ الصور، تم تحديد رسائل غير نصية فقط.');
+      toast.error('لا يمكن نسخ الصور، تم تحديد رسائل غير نصية فقط.');
     }
     handleCancelSelection();
   }, [selectedMessages, handleCancelSelection]);
@@ -64,7 +65,7 @@ export const useMessageSelection = (
     );
 
     if (hasTextMessages && hasMediaMessages) {
-      alert('لا يمكن إعادة توجيه الوسائط المتعددة مع النصوص في أمر واحد');
+      toast.error('لا يمكن إعادة توجيه الوسائط المتعددة مع النصوص في أمر واحد');
       handleCancelSelection();
       return;
     }

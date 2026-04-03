@@ -2,14 +2,14 @@ import { create } from 'zustand';
 
 interface GlobalUIState {
   activeScreen: 'home' | 'chat' | 'conversations' | 'profile' | 'settings';
-  selectionMode: 'none' | 'messages' | 'conversations' | 'comments';
+  selectionMode: 'none' | 'messages' | 'conversations';
   selectedItems: any[];
 
   setActiveScreen: (screen: 'home' | 'chat' | 'conversations' | 'profile' | 'settings') => void;
-  setSelectionMode: (mode: 'none' | 'messages' | 'conversations' | 'comments') => void;
+  setSelectionMode: (mode: 'none' | 'messages' | 'conversations') => void;
   setSelectedItems: (items: any[]) => void;
   clearSelection: () => void;
-  toggleSelectedItem: (item: any, type: 'message' | 'conversation' | 'comment') => void;
+  toggleSelectedItem: (item: any, type: 'message' | 'conversation') => void;
 
   triggerAction: (actionType: 'deleteForMe' | 'deleteForAll' | 'pin' | 'forward' | 'info' | 'edit' | 'share' | 'deleteConversation' | 'deleteConversationForAll' | 'archiveConversation' | 'reply') => void;
   lastTriggeredAction: { type: string; timestamp: number } | null;
@@ -51,12 +51,9 @@ export const useGlobalUIStore = create<GlobalUIState>((set, get) => ({
         return;
       }
 
-      // Logic for messages and comments
-      // If mode doesn't match current type, start new selection
-      const targetMode = type === 'message' ? 'messages' : type === 'comment' ? 'comments' : 'none';
-      
-      if (selectionMode !== targetMode) {
-        set({ selectedItems: [item], selectionMode: targetMode as any });
+      // Logic for messages
+      if (selectionMode !== 'messages') {
+        set({ selectedItems: [item], selectionMode: 'messages' });
       } else {
         set({ selectedItems: [...selectedItems, item] });
       }
@@ -66,4 +63,4 @@ export const useGlobalUIStore = create<GlobalUIState>((set, get) => ({
   triggerAction: (actionType) => {
     set({ lastTriggeredAction: { type: actionType, timestamp: Date.now() } });
   },
-}));
+}));

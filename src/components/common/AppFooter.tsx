@@ -161,7 +161,7 @@ export const AppFooter: React.FC<AppFooterProps> = ({ isKeyboardVisible = false 
                     }}
                     className="block w-full text-right px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
                   >
-                    {selectionMode === 'conversations' ? 'حذف المحادثة لدي' : selectionMode === 'comments' ? 'حذف التعليق لدي' : 'حذف الرسالة لدي'}
+                    {selectionMode === 'conversations' ? 'حذف المحادثة لدي' : 'حذف الرسالة لدي'}
                   </button>
                   <button
                     onClick={(e) => {
@@ -171,7 +171,7 @@ export const AppFooter: React.FC<AppFooterProps> = ({ isKeyboardVisible = false 
                     }}
                     className="block w-full text-right px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
                   >
-                    {selectionMode === 'conversations' ? 'حذف المحادثة لدى الجميع' : selectionMode === 'comments' ? 'حذف التعليق لدى الجميع' : 'حذف الرسالة لدى الجميع'}
+                    {selectionMode === 'conversations' ? 'حذف المحادثة لدى الجميع' : 'حذف الرسالة لدى الجميع'}
                   </button>
                 </div>
               )}
@@ -240,16 +240,7 @@ export const AppFooter: React.FC<AppFooterProps> = ({ isKeyboardVisible = false 
               </>
             )}
 
-            {/* أزرار التعليقات */}
-            {selectionMode === 'comments' && (
-              <button
-                onClick={() => handleActionClick('edit')}
-                disabled={selectedCount !== 1}
-                className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Edit size={20} />
-              </button>
-            )}
+
 
             {/* زر الإغلاق */}
             <button

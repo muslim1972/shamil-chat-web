@@ -4,6 +4,7 @@ import { enhancedSignIn, enhancedSignUp } from '../services/network_fix';
 import { signInWithAlternativeClient, signUpWithAlternativeClient } from '../services/alternative_network_fix';
 import type { Session, User, SupabaseClient } from '@supabase/supabase-js';
 import { updateCurrentUserCache } from '../services/UserDataCache';
+import { toast } from 'react-hot-toast';
 
 // نوع بيانات الـ profile من جدول users
 export interface UserProfile {
@@ -149,7 +150,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // إذا فشل العميل الأصلي، جرب العميل البديل
     if (response.error && response.error.message.includes('Cannot connect to server')) {
       console.log('محاولة تسجيل الدخول باستخدام العميل البديل...');
-      alert('جاري محاولة الاتصال بطريقة بديلة...');
+      toast('جاري محاولة الاتصال بطريقة بديلة...', { icon: '🔄' });
 
       try {
         response = await signInWithAlternativeClient(email, password);
@@ -185,7 +186,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         response.error.message.includes('Network request failed') ||
         response.error.message.includes('fetch'))) {
       console.log('محاولة إنشاء الحساب باستخدام العميل البديل...');
-      alert('جاري محاولة الاتصال بطريقة بديلة...');
+      toast('جاري محاولة الاتصال بطريقة بديلة...', { icon: '🔄' });
 
       try {
         response = await signUpWithAlternativeClient(

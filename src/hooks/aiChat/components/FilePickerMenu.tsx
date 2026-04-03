@@ -3,6 +3,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Image, FileText, FileType2, X } from 'lucide-react';
+import toast from 'react-hot-toast';
 import type { FileType } from '../useFileSelection';
 
 interface FilePickerMenuProps {
@@ -27,7 +28,7 @@ export const FilePickerMenu: React.FC<FilePickerMenuProps> = ({ onSelect, disabl
 
     const handleSelect = (type: FileType) => {
         if (type !== 'image') {
-            alert('سيتم اضافة هذه الميزة قريبا');
+            toast('سيتم اضافة هذه الميزة قريبا');
             setIsOpen(false);
             return;
         }

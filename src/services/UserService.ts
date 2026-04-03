@@ -176,5 +176,57 @@ export const UserService = {
       console.error('Unexpected error in uploadAvatar:', error);
       return { success: false, error: 'حدث خطأ غير متوقع' };
     }
+  },
+
+  /**
+   * تحديث رمز QR في الجداول (profiles و users)
+   * @param userId معرف المستخدم
+   * @param qrDataUrl بيانات الـ QR بصيغة Base64
+   * @returns وعد بالنتيجة
+   */
+  async updateUserQR(userId: string, qrDataUrl: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      // 1. تحديث رمز QR في جدول public.profiles
+      // نستخدم update بدلاً من upsert لتجنب مشاكل RLS المتعلقة بالإدخال الجديد
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({ user_qr: qrDataUrl })
+        .eq('id', userId);
+
+      if (profileError) {
+        console.error('Error updating QR in profiles table:', profileError);
+        return { success: false, error: 'فشل تحديث رمز QR في جدول الملف الشخصي' };
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error('Unexpected error in updateUserQR:', error);
+      return { success: false, error: 'حدث خطأ غير متوقع أثناء حفظ رمز QR' };
+    }
+  },
+
+  /**
+   * تحديث رقم الهاتف في جدول users
+   * @param userId معرف المستخدم
+   * @param phoneNumber رقم الهاتف الجديد
+   * @returns وعد بالنتيجة
+   */
+  async updatePhoneNumber(userId: string, phoneNumber: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const { error } = await supabase
+        .from('users')
+        .update({ phone_number: phoneNumber })
+        .eq('id', userId);
+
+      if (error) {
+        console.error('Error updating phone number:', error);
+        return { success: false, error: error.message };
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error('Unexpected error in updatePhoneNumber:', error);
+      return { success: false, error: 'حدث خطأ غير متوقع أثناء تحديث رقم الهاتف' };
+    }
   }
 };

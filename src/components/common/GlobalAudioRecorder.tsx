@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Mic, Square, Trash2, Check, Play, Pause, RefreshCcw } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 interface GlobalAudioRecorderProps {
     onRecordingComplete: (blob: Blob, duration: number) => void;
@@ -93,7 +94,7 @@ export const GlobalAudioRecorder: React.FC<GlobalAudioRecorderProps> = ({
 
         } catch (err) {
             console.error('Failed to start recording', err);
-            alert('Could not access microphone');
+            toast.error('Could not access microphone');
         }
     };
 

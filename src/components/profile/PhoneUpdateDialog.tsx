@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
     Dialog,
     DialogContent,
@@ -6,6 +6,7 @@ import {
     DialogTitle,
     DialogDescription,
 } from '@/components/ui/dialog';
+import { X } from 'lucide-react';
 import LinkPhoneNumber from '../LinkPhoneNumber';
 
 interface PhoneUpdateDialogProps {
@@ -34,10 +35,12 @@ export const PhoneUpdateDialog: React.FC<PhoneUpdateDialogProps> = ({
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-md bg-white dark:bg-gray-800 rounded-2xl p-0 overflow-hidden">
-                <DialogHeader className="sr-only">
-                    <DialogTitle>تحديث رقم الهاتف</DialogTitle>
-                    <DialogDescription>
-                        قم بربط أو تحديث رقم هاتفك لاستخدامه في استعادة الحساب وتأمين الوصول.
+                <DialogHeader className="p-6 pb-0">
+                    <DialogTitle className="text-xl font-bold">
+                        رقم الهاتف
+                    </DialogTitle>
+                    <DialogDescription className="text-sm text-gray-500 mt-1">
+                        واستعادة الحساب (2FA) للأمان الإضافي
                     </DialogDescription>
                 </DialogHeader>
                 <div className="p-1">

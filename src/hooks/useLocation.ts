@@ -2,6 +2,7 @@
 // This hook handles location sharing functionality
 
 import { useCallback } from 'react';
+import toast from 'react-hot-toast';
 
 interface UseLocationProps {
   sendMessage: (message: string) => Promise<void>;
@@ -32,7 +33,7 @@ export const useLocation = ({ sendMessage }: UseLocationProps) => {
       // إن لم تنجح Capacitor أو لسنا على الهاتف، نستخدم navigator.geolocation
       if (latitude == null || longitude == null) {
         if (!navigator.geolocation) {
-          alert('خدمة تحديد الموقع غير مدعومة في هذا السياق.');
+          toast.error('خدمة تحديد الموقع غير مدعومة في هذا السياق.');
           return;
         }
         // Debug: Trace who is asking for location
@@ -52,7 +53,7 @@ export const useLocation = ({ sendMessage }: UseLocationProps) => {
       }
 
       if (latitude == null || longitude == null) {
-        alert('تعذر تحديد الموقع حالياً.');
+        toast.error('تعذر تحديد الموقع حالياً.');
         return;
       }
 
@@ -64,13 +65,13 @@ export const useLocation = ({ sendMessage }: UseLocationProps) => {
       console.error('Error getting location:', error);
       const code = error?.code;
       if (code === 1) {
-        alert('تم رفض إذن الوصول إلى الموقع. يرجى تفعيل خدمة الموقع من إعدادات النظام/المتصفح.');
+        toast.error('تم رفض إذن الوصول إلى الموقع. يرجى تفعيل خدمة الموقع من إعدادات النظام/المتصفح.');
       } else if (code === 2) {
-        alert('لا يمكن الوصول إلى معلومات الموقع. يرجى التحقق من اتصال الإنترنت أو تفعيل GPS.');
+        toast.error('لا يمكن الوصول إلى معلومات الموقع. يرجى التحقق من اتصال الإنترنت أو تفعيل GPS.');
       } else if (code === 3) {
-        alert('انتهت مهلة الحصول على الموقع. يرجى المحاولة مرة أخرى.');
+        toast.error('انتهت مهلة الحصول على الموقع. يرجى المحاولة مرة أخرى.');
       } else {
-        alert('فشل الحصول على الموقع. يرجى المحاولة مرة أخرى.');
+        toast.error('فشل الحصول على الموقع. يرجى المحاولة مرة أخرى.');
       }
     }
   }, [sendMessage]);

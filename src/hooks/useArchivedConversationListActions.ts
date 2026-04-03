@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { supabase } from '../services/supabase';
+import toast from 'react-hot-toast';
 
 export const useArchivedConversationListActions = (setArchivedConversations: React.Dispatch<React.SetStateAction<any[]>>, fetchArchivedConversations: () => Promise<void>) => {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -11,7 +12,7 @@ export const useArchivedConversationListActions = (setArchivedConversations: Rea
     try {
       const { error } = await operation();
       if (error) {
-        alert('خطأ: ' + errorMessage);
+        toast.error('خطأ: ' + errorMessage);
         console.error(errorMessage, error);
       } else {
         // تحديث الواجهة فوراً بدلاً من انتظار إعادة الجلب
@@ -23,7 +24,7 @@ export const useArchivedConversationListActions = (setArchivedConversations: Rea
         }
       }
     } catch (err: any) {
-      alert('خطأ: ' + errorMessage);
+      toast.error('خطأ: ' + errorMessage);
       console.error(errorMessage, err);
     } finally {
       setIsProcessing(false);

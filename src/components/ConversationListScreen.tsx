@@ -519,8 +519,11 @@ const ConversationListScreen: React.FC = () => {
           <header className="sticky top-0 z-50 backdrop-blur-lg p-4 shadow-sm border-b pt-[calc(1rem+env(safe-area-inset-top))]" style={{ background: 'var(--header-bg)', borderColor: 'var(--primary-light)' }}>
             <div className="flex justify-between items-center gap-2">
               {/* أفاتار واسم المستخدم */}
-              <div className="flex items-center gap-2 min-w-0 flex-shrink">
-                <div className="relative inline-flex items-center justify-center w-8 h-8 overflow-hidden rounded-full flex-shrink-0" style={{ background: 'var(--primary-light)' }}>
+              <div 
+                onClick={() => navigate('/profile')} 
+                className="flex items-center gap-2 min-w-0 flex-shrink cursor-pointer hover:opacity-80 active:scale-95 transition-all group"
+              >
+                <div className="relative inline-flex items-center justify-center w-8 h-8 overflow-hidden rounded-full flex-shrink-0 group-hover:ring-2 group-hover:ring-indigo-500 transition-all" style={{ background: 'var(--primary-light)' }}>
                   {userAvatar ? (
                     <img
                       src={userAvatar}
@@ -533,7 +536,7 @@ const ConversationListScreen: React.FC = () => {
                     </span>
                   )}
                 </div>
-                <span className="text-sm sm:text-base font-semibold truncate max-w-[100px] sm:max-w-[150px]" style={{ color: 'var(--shagram-text)' }}>
+                <span className="text-sm sm:text-base font-semibold truncate max-w-[100px] sm:max-w-[150px] group-hover:text-indigo-600 transition-colors" style={{ color: 'var(--shagram-text)' }}>
                   {(user as any)?.user_metadata?.username || 'المستخدم'}
                 </span>
               </div>
