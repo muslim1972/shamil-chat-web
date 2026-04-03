@@ -32,9 +32,9 @@ messaging.onBackgroundMessage((payload) => {
     console.log('[firebase-messaging-sw.js] Received background message ', payload);
     
     // استخراج البيانات
-    const notificationTitle = payload.notification?.title || payload.data?.title || 'رسالة جديدة';
+    const notificationTitle = payload.notification?.title || payload.data?.title || 'دردشة شامل ✨';
     const notificationOptions = {
-        body: payload.notification?.body || payload.data?.body || 'لديك إشعار جديد',
+        body: payload.notification?.body || payload.data?.body || 'لديك رسالة جديدة في الدردشة',
         icon: '/favicon.svg',
         badge: '/favicon.svg',
         data: payload.data

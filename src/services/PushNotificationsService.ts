@@ -571,7 +571,8 @@ export class PushNotificationsService {
       const { error } = await supabase.functions.invoke('send-urgent-alert-fcm', {
         body: {
           device_token: deviceToken,
-          notification_data: fcmData
+          notification_data: fcmData,
+          app_name: 'shamil_chat_pwa' // ✨ تمييز مصدر الإشعار
         }
       });
 

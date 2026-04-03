@@ -33,6 +33,7 @@ export function useSend(
       sender_username: username,
       sender_avatar_url: avatarUrl,
       client_id: clientId,
+      app_name: 'shamil_chat_pwa', // ✨ تمييز مصدر الرسالة للإشعارات
       ...(replyToMessage ? {
         reply_snapshot: {
           id: replyToMessage.id,
@@ -115,6 +116,7 @@ export function useSend(
         source: 'recorder',
         is_recording: true,
         duration: duration, // إضافة المدة
+        app_name: 'shamil_chat_pwa', // ✨ تمييز مصدر الرسالة للإشعارات
         ...(caption ? { caption: caption.trim() } : {}),
       };
 
@@ -194,6 +196,7 @@ export function useSend(
         provider: 'r2',
         bucket: 'conv-images',
         source: 'clipboard', // مصدر: الحافظة
+        app_name: 'shamil_chat_pwa', // ✨ تمييز مصدر الرسالة للإشعارات
         ...metadataAdditions,
       };
 
@@ -335,6 +338,7 @@ export function useSend(
           sender_avatar_url: avatarUrl,
           provider: 'r2', // سنستخدم R2
           bucket: bucketName,
+          app_name: 'shamil_chat_pwa', // ✨ تمييز مصدر الرسالة للإشعارات
           ...metadataAdditions,
           ...(type === 'audio' ? { source: 'picker' } : {}),
         };

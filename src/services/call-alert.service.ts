@@ -367,7 +367,8 @@ class CallAlertService {
           userId: notification.to,
           title: notification.title,
           body: notification.body,
-          data: notification.data
+          data: notification.data,
+          app_name: 'shamil_chat_pwa' // ✨ تمييز مصدر الإشعار
         }
       });
 

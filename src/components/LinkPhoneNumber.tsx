@@ -247,13 +247,6 @@ const LinkPhoneNumber: React.FC = () => {
         }
     };
 
-    const handleCancel = () => {
-        setPhoneNumber(currentPhone || '');
-        setOtp('');
-        setError(null);
-        cleanupRecaptcha();
-    };
-
     const handleBackToInput = () => {
         setStep('input');
         setOtp('');
@@ -331,18 +324,10 @@ const LinkPhoneNumber: React.FC = () => {
 
                     <div className="space-y-2">
                         <div className="flex gap-2">
-                            {currentPhone && (
-                                <button
-                                    onClick={handleCancel}
-                                    className="flex-1 px-4 py-3 text-sm font-bold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-all active:scale-95"
-                                >
-                                    إلغاء
-                                </button>
-                            )}
-                            <button
+                             <button
                                 onClick={handleSendOTP}
                                 disabled={loading || !phoneNumber || !recaptchaReady}
-                                className="flex-[2] px-4 py-3 text-sm font-bold text-white bg-indigo-500 rounded-xl hover:bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 shadow-sm"
+                                className="w-full px-4 py-3 text-sm font-bold text-white bg-indigo-500 rounded-xl hover:bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 shadow-sm"
                             >
                                 {loading ? 'جاري الإرسال...' : 'إرسال رمز التحقق'}
                             </button>
